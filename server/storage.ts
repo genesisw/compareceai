@@ -29,6 +29,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, count, sql, or, update } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 export interface IStorage {
   // User operations
@@ -105,7 +106,10 @@ export class DatabaseStorage implements IStorage {
   async createUser(userData: Omit<UpsertUser, 'id'>): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values({
+        ...userData,
+        id: randomUUID(),
+      })
       .returning();
     return user;
   }
