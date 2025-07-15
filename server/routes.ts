@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/events', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
@@ -70,7 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Reaction routes
   app.post('/api/events/:id/react', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const eventId = req.params.id;
       const { reaction } = req.body;
 
@@ -105,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Check-in routes
   app.post('/api/events/:id/checkin', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const eventId = req.params.id;
       const { promoterId } = req.body;
 
@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/checkins/validate', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO', 'FUNCIONARIO'].includes(user.role)) {
@@ -167,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User stats routes
   app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let stats = await storage.getUserStats(userId);
       
       if (!stats) {
@@ -190,7 +190,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard routes for establishments
   app.get('/api/dashboard/events', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
@@ -214,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/dashboard/checkins/:eventId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO', 'FUNCIONARIO'].includes(user.role)) {
@@ -232,7 +232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Incentive routes
   app.post('/api/events/:id/incentives', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
@@ -255,7 +255,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin routes
   app.post('/api/admin/seed', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'SUPER_ADMIN') {
@@ -272,7 +272,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/promote/:userId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'SUPER_ADMIN') {
@@ -292,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Route for establishment owners to promote their employees
   app.post('/api/establishment/promote/:userId', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -318,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Establishment management routes
   app.get('/api/establishment/current', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -352,7 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/establishment/events', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -374,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/establishment/events', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -417,7 +417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/establishment/staff', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -439,7 +439,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/establishment/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -469,7 +469,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/establishment/settings', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
@@ -533,7 +533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Establishment management routes
   app.post('/api/establishments', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
@@ -555,7 +555,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/establishments', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
@@ -573,7 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Route to promote user to establishment owner
   app.post('/api/admin/promote-owner', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user || user.role !== 'SUPER_ADMIN') {
