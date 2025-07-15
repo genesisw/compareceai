@@ -28,7 +28,7 @@ import {
   type InsertUserStats,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, count, sql, or } from "drizzle-orm";
+import { eq, and, desc, count, sql, or, update } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -172,18 +172,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrUpdateReaction(reaction: InsertEventReaction): Promise<EventReaction> {
-    const [newReaction] = await db
-      .insert(eventReactions)
-      .values(reaction)
-      .onConflictDoUpdate({
-        target: [eventReactions.userId, eventReactions.eventId],
-        set: {
+    // Check if reaction already exists
+    const existingReaction = await this.getUserReaction(reaction.userId!, reaction.eventId!);
+    
+    if (existingReaction) {
+      // Update existing reaction
+      const [updatedReaction] = await db
+        .update(eventReactions)
+        .set({
           reaction: reaction.reaction,
           createdAt: new Date(),
-        },
-      })
-      .returning();
-    return newReaction;
+        })
+        .where(
+          and(
+            eq(eventReactions.userId, reaction.userId!),
+            eq(eventReactions.eventId, reaction.eventId!)
+          )
+        )
+        .returning();
+      return updatedReaction;
+    } else {
+      // Create new reaction
+      const [newReaction] = await db
+        .insert(eventReactions)
+        .values(reaction)
+        .returning();
+      return newReaction;
+    }
   }
 
   async getEventReactions(eventId: string): Promise<EventReaction[]> {

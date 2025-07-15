@@ -8,6 +8,7 @@ import {
   uuid,
   integer,
   boolean,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -69,7 +70,9 @@ export const eventReactions = pgTable("event_reactions", {
   eventId: uuid("event_id").references(() => events.id),
   reaction: text("reaction").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  userEventUnique: unique().on(table.userId, table.eventId),
+}));
 
 // Incentives table
 export const incentives = pgTable("incentives", {

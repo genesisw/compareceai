@@ -1,0 +1,111 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+@tanstack_react-query.js?v=c79c22c3:889 Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["/api/events","36d0c548-4fdf-45b6-9918-f3e3b8838c14","user-reaction"]
+onSuccess @ @tanstack_react-query.js?v=c79c22c3:889Understand this error
+queryClient.ts:15  POST https://4c4d6025-91b6-4d97-9633-06e2cd71c6cc-00-30mrb4ryin287.riker.replit.dev/api/events/36d0c548-4fdf-45b6-9918-f3e3b8838c14/react 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+mutationFn @ event-detail.tsx:44
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+(anonymous) @ @tanstack_react-query.js?v=c79c22c3:3295
+onReaction @ event-detail.tsx:193
+onClick @ reaction-buttons.tsx:55
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error
+queryClient.ts:15  POST https://4c4d6025-91b6-4d97-9633-06e2cd71c6cc-00-30mrb4ryin287.riker.replit.dev/api/events/36d0c548-4fdf-45b6-9918-f3e3b8838c14/react 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+mutationFn @ event-detail.tsx:44
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+(anonymous) @ @tanstack_react-query.js?v=c79c22c3:3295
+onReaction @ event-detail.tsx:193
+onClick @ reaction-buttons.tsx:55
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error
+queryClient.ts:15  POST https://4c4d6025-91b6-4d97-9633-06e2cd71c6cc-00-30mrb4ryin287.riker.replit.dev/api/events/36d0c548-4fdf-45b6-9918-f3e3b8838c14/react 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+mutationFn @ event-detail.tsx:44
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+(anonymous) @ @tanstack_react-query.js?v=c79c22c3:3295
+onReaction @ event-detail.tsx:193
+onClick @ reaction-buttons.tsx:55
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error
+queryClient.ts:15  POST https://4c4d6025-91b6-4d97-9633-06e2cd71c6cc-00-30mrb4ryin287.riker.replit.dev/api/events/36d0c548-4fdf-45b6-9918-f3e3b8838c14/react 500 (Internal Server Error)
+apiRequest @ queryClient.ts:15
+mutationFn @ event-detail.tsx:44
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+(anonymous) @ @tanstack_react-query.js?v=c79c22c3:3295
+onReaction @ event-detail.tsx:193
+onClick @ reaction-buttons.tsx:55
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error

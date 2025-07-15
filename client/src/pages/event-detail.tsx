@@ -6,7 +6,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/layout/header";
 import BottomNav from "@/components/layout/bottom-nav";
-import ReactionButtons from "@/components/events/reaction-buttons";
+import ReactionButtons from "@/components/reaction-buttons";
 import QRGenerator from "@/components/qr/qr-generator";
 import IncentiveCard from "@/components/incentives/incentive-card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -188,10 +188,10 @@ export default function EventDetail() {
               )}
 
               <ReactionButtons
-                eventId={event.id}
-                userReaction={userReaction?.reaction}
+                userReaction={userReaction?.reaction as any}
                 onReaction={(reaction) => reactionMutation.mutate(reaction)}
                 isLoading={reactionMutation.isPending}
+                reactionCounts={event.stats?.reactionCounts}
               />
 
               {userReaction?.reaction === 'EU_VOU_COMPARECER' && (
@@ -229,7 +229,7 @@ export default function EventDetail() {
             <DialogHeader>
               <DialogTitle className="text-center">QR Code para Check-in</DialogTitle>
             </DialogHeader>
-            <QRGenerator eventId={event.id} />
+            <QRGenerator eventId={event?.id} />
           </DialogContent>
         </Dialog>
       </div>
