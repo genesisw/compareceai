@@ -289,7 +289,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { role } = req.body;
       
       if (role === 'DONO_ESTABELECIMENTO') {
-        await promoteUserToEstablishmentOwner(targetUserId, 'temp-establishment-id');
+        await promoteUserToEstablishmentOwner(targetUserId);
         res.json({ message: `User ${targetUserId} promoted to DONO_ESTABELECIMENTO!` });
       } else {
         await promoteUserToAdmin(targetUserId);
@@ -413,7 +413,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User ID and establishment ID are required" });
       }
 
-      await promoteUserToEstablishmentOwner(targetUserId, establishmentId);
+      await promoteUserToEstablishmentOwner(targetUserId);
       res.json({ message: `User ${targetUserId} promoted to establishment owner!` });
     } catch (error) {
       console.error("Error promoting user to establishment owner:", error);

@@ -163,7 +163,7 @@ export async function promoteUserToAdmin(userId: string) {
   console.log(`✅ User ${userId} promoted to SUPER_ADMIN!`);
 }
 
-export async function promoteUserToEstablishmentOwner(userId: string, establishmentId: string) {
+export async function promoteUserToEstablishmentOwner(userId: string) {
   console.log(`🔧 Promoting user ${userId} to DONO_ESTABELECIMENTO...`);
   
   // Update user role to DONO_ESTABELECIMENTO
@@ -171,10 +171,18 @@ export async function promoteUserToEstablishmentOwner(userId: string, establishm
     .set({ role: "DONO_ESTABELECIMENTO" })
     .where(eq(users.id, userId));
 
-  // Update establishment to belong to this owner
-  await db.update(establishments)
-    .set({ ownerId: userId })
-    .where(eq(establishments.id, establishmentId));
+  // Create a default establishment for this owner
+  const [establishment] = await db.insert(establishments)
+    .values({
+      id: randomUUID(),
+      name: "Meu Estabelecimento",
+      description: "Estabelecimento padrão - configure as informações",
+      city: "São Paulo",
+      ownerId: userId,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+    .returning();
 
-  console.log(`✅ User ${userId} promoted to DONO_ESTABELECIMENTO!`);
+  console.log(`✅ User ${userId} promoted to DONO_ESTABELECIMENTO with establishment ${establishment.id}!`);
 }

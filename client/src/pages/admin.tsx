@@ -263,13 +263,23 @@ export default function Admin() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="bg-amber-50 p-4 rounded-lg mb-4">
+                  <h4 className="font-semibold mb-2">📋 Como Encontrar o ID do Usuário</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Usuário deve fazer login primeiro na plataforma</li>
+                    <li>• O ID aparece no topo do perfil (número como 45077607)</li>
+                    <li>• <strong>NÃO é o email</strong> - é o ID numérico do Replit</li>
+                    <li>• Exemplo: digite <code>45077607</code> para promover digitalsimetria@gmail.com</li>
+                  </ul>
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="userId">ID do Usuário</Label>
                   <Input
                     id="userId"
                     value={userId}
                     onChange={(e) => setUserId(e.target.value)}
-                    placeholder="Digite o ID do usuário"
+                    placeholder="Digite o ID numérico (ex: 45077607)"
                   />
                 </div>
                 <Button 
@@ -277,7 +287,7 @@ export default function Admin() {
                   disabled={isPromoving || !userId.trim()}
                   className="w-full"
                 >
-                  {isPromoving ? "Promovendo..." : "Promover a Super Admin"}
+                  {isPromoving ? "Promovendo..." : "Promover a Dono de Estabelecimento"}
                 </Button>
               </CardContent>
             </Card>
