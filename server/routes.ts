@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertEventSchema, insertEventReactionSchema, insertIncentiveSchema, insertCheckInSchema, insertEstablishmentSchema } from "@shared/schema";
 import { z } from "zod";
-import { nanoid } from "nanoid";
+import { randomUUID } from "crypto";
 import { seedDatabase, promoteUserToAdmin, promoteUserToEstablishmentOwner } from "./seed";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -116,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { promoterId } = req.body;
 
       // Generate QR code
-      const qrCode = nanoid(16);
+      const qrCode = randomUUID();
 
       const checkInData = insertCheckInSchema.parse({
         userId,
@@ -286,8 +286,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const targetUserId = req.params.userId;
-      await promoteUserToAdmin(targetUserId);
-      res.json({ message: `User ${targetUserId} promoted to SUPER_ADMIN!` });
+      const { role } = req.body;
+      
+      if (role === 'DONO_ESTABELECIMENTO') {
+        await promoteUserToEstablishmentOwner(targetUserId, 'temp-establishment-id');
+        res.json({ message: `User ${targetUserId} promoted to DONO_ESTABELECIMENTO!` });
+      } else {
+        await promoteUserToAdmin(targetUserId);
+        res.json({ message: `User ${targetUserId} promoted to SUPER_ADMIN!` });
+      }
+    } catch (error) {
+      console.error("Error promoting user:", error);
+      res.status(500).json({ message: "Failed to promote user" });
+    }
+  });
+
+  // Route for establishment owners to promote their employees
+  app.post('/api/establishment/promote/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Only establishment owners can promote users" });
+      }
+
+      const targetUserId = req.params.userId;
+      const { role } = req.body;
+      
+      if (!['FUNCIONARIO', 'PROMOTER'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+
+      await storage.upsertUser({
+        id: targetUserId,
+        role
+      });
+      
+      res.json({ message: `User ${targetUserId} promoted to ${role}!` });
     } catch (error) {
       console.error("Error promoting user:", error);
       res.status(500).json({ message: "Failed to promote user" });

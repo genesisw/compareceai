@@ -67,11 +67,13 @@ export default function Admin() {
     
     setIsPromoving(true);
     try {
-      await apiRequest("POST", `/api/admin/promote/${userId}`);
+      await apiRequest("POST", `/api/admin/promote/${userId}`, {
+        role: 'DONO_ESTABELECIMENTO'
+      });
       
       toast({
         title: "Sucesso!",
-        description: `Usuário ${userId} promovido a Super Admin.`,
+        description: `Usuário ${userId} promovido a Dono de Estabelecimento.`,
       });
       
       setUserId("");
@@ -90,6 +92,32 @@ export default function Admin() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Show login button if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="h-5 w-5" />
+                Admin Panel - Login Necessário
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Faça login para acessar o painel administrativo.
+              </p>
+              <Button onClick={() => window.location.href = '/api/login'} className="w-full">
+                Fazer Login
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

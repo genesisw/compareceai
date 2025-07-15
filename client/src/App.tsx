@@ -13,6 +13,7 @@ import Employee from "@/pages/employee";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
+import EstablishmentAdmin from "@/pages/establishment-admin";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,7 +29,10 @@ function Router() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/admin" component={Admin} />
+        </>
       ) : (
         <>
           <Route path="/" component={Home} />
@@ -38,6 +42,7 @@ function Router() {
           <Route path="/employee" component={Employee} />
           <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
+          <Route path="/establishment-admin" component={EstablishmentAdmin} />
         </>
       )}
       <Route component={NotFound} />
