@@ -1,0 +1,68 @@
+🎯 MINI GUIA DE IDENTIDADE VISUAL – Comparece.ai
+🧠 CONCEITO DA MARCA
+Comparece.ai é uma plataforma que conecta diversão e presença real com tecnologia. A marca expressa ação, vibração e pertencimento. Seu símbolo representa uma pessoa ativa (ícone humano), um “check-in” e um “sim” visual — envoltos em um design contemporâneo e alegre.
+
+🎨 CORES OFICIAIS
+Nome	Código HEX	Uso
+Roxo Magenta	#BB2288	Cor principal (texto, fundo, ícones)
+Laranja Vibrante	#F09232	Destaques, ícone, chamada para ação
+Branco	#FFFFFF	Fundos claros, contraste
+Preto Noturno	#0E0E0E	Textos escuros, contornos
+Roxo Escuro Sombra	#91166B	Sombra do ícone (profundidade)
+
+🔠 TIPOGRAFIA OFICIAL
+Elemento	Fonte	Peso sugerido
+Logotipo	Rubik	Bold/ExtraBold
+Textos do App	Rubik	Regular (400), Medium (500)
+Títulos	Rubik	Bold (700)
+
+A fonte Rubik é arredondada, moderna, com excelente legibilidade e personalidade.
+Disponível no Google Fonts.
+
+🧩 ELEMENTOS GRÁFICOS
+✔️ SÍMBOLO
+Ícone humano estilizado com gesto de presença/confirmação
+
+Remete a: check ✅, “eu fui”, pulso de energia, liberdade, movimento
+
+Combinação icônica de ação + emoção
+
+🅰️ LOGOTIPO COMBINADO
+COMPARECE em roxo magenta
+
+.AI em laranja vibrante
+
+Ponto entre as palavras é estilizado como parte do conjunto
+
+Ícone acima do “I” fecha a composição de forma harmoniosa
+
+🖼️ USOS RECOMENDADOS
+Aplicação	Orientação
+Telas escuras	Versão clara ou negativa (ícone em laranja)
+Fundos claros	Versão colorida padrão (roxo + laranja)
+Favicons / App	Apenas o símbolo central
+QR codes / Checkin	Símbolo dentro de selo circular
+Botões de ação	“Comparecer” com ícone ao lado
+
+❌ USOS PROIBIDOS
+Alterar cores oficiais
+
+Aplicar sombras extras
+
+Inclinar, esticar ou rotacionar o ícone
+
+Substituir a fonte Rubik por outra
+
+Usar o .AI em outra cor sem contexto
+
+📏 ÁREA DE PROTEÇÃO
+A altura do ícone deve ser usada como margem mínima ao redor do logotipo
+
+Em apps ou cabeçalhos, sempre manter boa legibilidade (tamanho mínimo: 40px altura)
+
+✨ SLOGANS (opcionais)
+“Comparecer vale a pena.”
+
+“Sua presença, seus benefícios.”
+
+“A balada começa aqui.”

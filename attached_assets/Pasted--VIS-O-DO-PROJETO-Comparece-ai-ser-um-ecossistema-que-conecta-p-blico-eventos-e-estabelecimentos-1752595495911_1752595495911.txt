@@ -1,0 +1,291 @@
+🎯 VISÃO DO PROJETO
+Comparece.ai será um ecossistema que conecta público, eventos e estabelecimentos através de um webapp com gamificação, incentivos, check-in inteligente e gestão simples.
+É como unir Eventbrite + Instagram Stories + Fidelidade Nubank + Lista VIP de balada.
+
+🧑‍💻 PAPÉIS DE USUÁRIOS
+1. Super Admin (vocês)
+Gerencia todos os estabelecimentos, eventos e usuários
+
+Define regras do sistema (ex: política de cupons, % de comissão para promoter)
+
+Acompanha métricas e crescimento da plataforma
+
+2. Estabelecimento (dono)
+Cria e gerencia seus eventos
+
+Cadastra seus funcionários e promoters
+
+Consulta estatísticas: check-ins, interesse do público, conversões de cupom, etc.
+
+3. Funcionários
+Dão baixa em cupons, brindes e check-ins
+
+Ajudam a validar entradas com lista
+
+Sem acesso administrativo
+
+4. Promoter
+Ganha link único para divulgar
+
+Acompanha número de conversões, cliques e check-ins gerados
+
+Pode ter sistema de pontos ou comissões
+
+5. Usuário Final (cliente)
+Visualiza eventos por categoria e cidade
+
+Marca interesse (estilo reactions: EU VOU COMPARECER / PENSANDO EM IR / NÃO VOU PODER)
+
+Resgata cupons e check-ins
+
+Acumula vantagens e histórico de comparecimentos
+
+🧭 FLUXO DA EXPERIÊNCIA DO USUÁRIO
+1. Explorar
+Interface mobile com ícones estilo "onde vou comparecer": pagode, sertanejo, techno etc.
+
+Usuário escolhe o estilo → vê lista de eventos por cidade
+
+2. Visualização do Evento
+Card com informações:
+
+Data, hora, local, DJ/banda
+
+Imagem de capa ou flyer
+
+Botões de reação (EU VOU, PENSANDO, NÃO VOU)
+
+Botão “Resgatar Benefício” (caso tenha)
+
+3. Conversão
+Se clicar “Eu Vou”:
+
+Nome entra na lista
+
+Gera QR Code ou link de check-in para uso na entrada
+
+Caso venha por link de promoter, marca no sistema
+
+4. No Local
+Funcionário escaneia ou dá baixa manual
+
+Sistema registra presença → ativa cupom, pontua o promoter
+
+5. Pós-evento
+Usuário acumula comparecimentos (ex: 3x/mês ganha brinde)
+
+Estabelecimento vê estatísticas (quantos clicaram, compareceram, por cidade)
+
+📊 MÓDULOS PRINCIPAIS (Escopo inicial do MVP)
+Catálogo de eventos
+
+Filtros por categoria musical, cidade, data
+
+Cards com overview e botões de reação
+
+Sistema de incentivo
+
+Lista VIP
+
+Cupons de desconto
+
+Vales brindes
+
+Recompensas por frequência (ex: “3 comparecimentos = brinde”)
+
+Check-in inteligente
+
+Geração de QR code ou nome na lista
+
+Funcionário valida no local (web interface simples)
+
+Área do Promoter
+
+Link com ID único
+
+Visualização de métricas de impacto (visualizações, check-ins)
+
+Dashboard Estabelecimento
+
+Cadastro de eventos
+
+Vouchers, lista VIP, brindes
+
+Estatísticas em tempo real
+
+Dashboard Super Admin
+
+Gestão geral da plataforma
+
+Estatísticas por cidade, evento, estilo
+
+Gerenciamento de estabelecimentos e promoters
+
+💡 IDEIAS ADICIONAIS PARA O FUTURO
+Notificações push/web sobre eventos perto do usuário
+
+Feed social: usuários podem postar "estou aqui no evento"
+
+Ranking dos mais fiéis por estabelecimento
+
+Integração com WhatsApp para envio de confirmação automática
+
+Tokens de pontos trocáveis por prêmios
+
+Login com Google/Apple para facilitar adesão
+
+API para que bares usem seu próprio sistema, mas plugado na plataforma
+
+🎨 DESIGN/EXPERIÊNCIA
+Estilo mobile-first, ultra leve, navegação fluida
+
+Interface tipo Instagram/Spotify: rápida, visual, intuitiva
+
+Paleta de cores vibrantes (conectadas à noite/diversão)
+
+🔐 ESTRUTURA MULTI-NÍVEL DE PERMISSÕES (resumo técnico)
+Papel	Permissões
+Super Admin	Tudo, inclusive moderar estabelecimentos
+Dono Estabelecimento	Criar eventos, cupons, ver stats, cadastrar promoter
+Funcionário	Validar lista/check-in/cupom
+Promoter	Ver seu link, estatísticas, comissão
+Usuário Final	Ver eventos, interagir, marcar presença, resgatar
+
+Se quiser, posso te ajudar a montar:
+
+o wireframe básico do app,
+
+o banco de dados com estrutura para multi papéis,
+
+um plano de fases de desenvolvimento,
+
+e até uma landing page institucional para captar os primeiros bares e promoters.
+
+Deseja que a gente avance com algum desses itens?
+
+
+
+
+
+
+
+
+Você disse:
+poe fazer isso o banco de dados com estrutura para multi papéis,
+
+
+O ChatGPT disse:
+Claro! Vou te entregar abaixo uma estrutura inicial de banco de dados relacional (PostgreSQL recomendado) para o projeto Comparece.ai, já com suporte completo a múltiplos papéis, promoções, check-ins, eventos e cidades.
+
+🧱 ESTRUTURA DO BANCO DE DADOS (DDL)
+🧑‍💼 users – Todos os usuários do sistema
+sql
+Copiar
+Editar
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  phone TEXT,
+  role TEXT NOT NULL CHECK (role IN ('SUPER_ADMIN', 'DONO_ESTABELECIMENTO', 'FUNCIONARIO', 'PROMOTER', 'USUARIO')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🏢 establishments – Estabelecimentos cadastrados
+sql
+Copiar
+Editar
+CREATE TABLE establishments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  city TEXT NOT NULL,
+  state TEXT NOT NULL,
+  owner_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  description TEXT,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+📍 events – Eventos criados por estabelecimentos
+sql
+Copiar
+Editar
+CREATE TABLE events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  establishment_id UUID REFERENCES establishments(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  category TEXT CHECK (category IN ('PAGODE', 'ROCK', 'SERTANEJO', 'FUNK', 'FORRÓ', 'TECHNO', 'SAMBA')),
+  start_datetime TIMESTAMP NOT NULL,
+  end_datetime TIMESTAMP,
+  city TEXT,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🎯 event_reactions – Reações do público aos eventos
+sql
+Copiar
+Editar
+CREATE TABLE event_reactions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  event_id UUID REFERENCES events(id),
+  reaction TEXT NOT NULL CHECK (reaction IN ('EU_VOU_COMPARECER', 'PENSANDO_EM_IR', 'NAO_VOU_PODER_IR')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, event_id) -- 1 reação por evento
+);
+🎁 incentives – Cupons, brindes, vales etc.
+sql
+Copiar
+Editar
+CREATE TABLE incentives (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id UUID REFERENCES events(id),
+  title TEXT NOT NULL,
+  type TEXT CHECK (type IN ('VALE_CHOPP', 'CUPOM_DESCONTO', 'BRINDE', 'OUTRO')),
+  description TEXT,
+  total_quantity INTEGER,
+  available_quantity INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🎫 redemptions – Resgates feitos por usuários
+sql
+Copiar
+Editar
+CREATE TABLE redemptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  incentive_id UUID REFERENCES incentives(id),
+  redeemed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status TEXT CHECK (status IN ('PENDENTE', 'RESGATADO', 'EXPIRADO')) DEFAULT 'PENDENTE'
+);
+🔐 check_ins – Registro de entrada em eventos
+sql
+Copiar
+Editar
+CREATE TABLE check_ins (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  event_id UUID REFERENCES events(id),
+  promoter_id UUID REFERENCES users(id),
+  checkin_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🔗 promoter_links – Links de divulgação dos promoters
+sql
+Copiar
+Editar
+CREATE TABLE promoter_links (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  promoter_id UUID REFERENCES users(id),
+  event_id UUID REFERENCES events(id),
+  unique_code TEXT UNIQUE NOT NULL,
+  clicks INTEGER DEFAULT 0,
+  conversions INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+🔐 ROLES E LÓGICA DE PERMISSÃO (resumo lógico)
+Role	Acesso
+SUPER_ADMIN	Gerencia tudo
+DONO_ESTABELECIMENTO	Cria eventos, gerencia incentivos e funcionários
+FUNCIONARIO	Dá baixa em cupons, faz check-in
+PROMOTER	Tem link próprio, visualiza métricas
+USUARIO	Marca presença, interage com eventos, resgata cupons
