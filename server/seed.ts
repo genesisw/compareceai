@@ -1,15 +1,19 @@
 import { db } from "./db";
 import { users, establishments, events, eventReactions, incentives, userStats } from "@shared/schema";
 import { eq } from "drizzle-orm";
-import { nanoid } from "nanoid";
+import { randomUUID } from "crypto";
 
 export async function seedDatabase() {
   console.log("🌱 Seeding database...");
 
   // Create sample establishments
+  const establishment1Id = randomUUID();
+  const establishment2Id = randomUUID();
+  const establishment3Id = randomUUID();
+
   const sampleEstablishments = [
     {
-      id: nanoid(),
+      id: establishment1Id,
       name: "Bar do João",
       description: "O melhor bar de pagode da cidade",
       address: "Rua das Flores, 123",
@@ -20,7 +24,7 @@ export async function seedDatabase() {
       createdAt: new Date(),
     },
     {
-      id: nanoid(),
+      id: establishment2Id,
       name: "Clube do Sertanejo",
       description: "Ambiente country com música ao vivo",
       address: "Av. dos Pioneiros, 456",
@@ -31,7 +35,7 @@ export async function seedDatabase() {
       createdAt: new Date(),
     },
     {
-      id: nanoid(),
+      id: establishment3Id,
       name: "Techno Club",
       description: "House e techno até amanhecer",
       address: "Rua da Balada, 789",
@@ -56,7 +60,7 @@ export async function seedDatabase() {
 
   const sampleEvents = [
     {
-      id: nanoid(),
+      id: randomUUID(),
       title: "Noite do Pagode",
       description: "Pagode ao vivo com Grupo Revelação",
       category: "PAGODE",
@@ -64,11 +68,11 @@ export async function seedDatabase() {
       endDatetime: new Date(tomorrow.getTime() + 4 * 60 * 60 * 1000), // 4 hours later
       city: "São Paulo",
       imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
-      establishmentId: sampleEstablishments[0].id,
+      establishmentId: establishment1Id,
       createdAt: new Date(),
     },
     {
-      id: nanoid(),
+      id: randomUUID(),
       title: "Festa Sertaneja",
       description: "Sertanejo universitário com dupla famosa",
       category: "SERTANEJO",
@@ -76,19 +80,19 @@ export async function seedDatabase() {
       endDatetime: new Date(nextWeek.getTime() + 5 * 60 * 60 * 1000), // 5 hours later
       city: "São Paulo",
       imageUrl: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400",
-      establishmentId: sampleEstablishments[1].id,
+      establishmentId: establishment2Id,
       createdAt: new Date(),
     },
     {
-      id: nanoid(),
+      id: randomUUID(),
       title: "Rave Underground",
       description: "Techno e house music com DJs internacionais",
       category: "TECHNO",
-      startDatetime: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000), // Day after tomorrow
-      endDatetime: new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000), // 8 hours later
+      startDatetime: nextWeek,
+      endDatetime: new Date(nextWeek.getTime() + 6 * 60 * 60 * 1000), // 6 hours later
       city: "São Paulo",
-      imageUrl: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=400",
-      establishmentId: sampleEstablishments[2].id,
+      imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+      establishmentId: establishment3Id,
       createdAt: new Date(),
     }
   ];
@@ -99,31 +103,31 @@ export async function seedDatabase() {
   // Create sample incentives
   const sampleIncentives = [
     {
-      id: nanoid(),
+      id: randomUUID(),
       eventId: sampleEvents[0].id,
-      title: "Desconto na Entrada",
+      title: "Desconto de 20% na entrada",
       type: "DESCONTO",
-      description: "50% de desconto na entrada",
-      totalQuantity: 100,
-      availableQuantity: 100,
-      createdAt: new Date(),
-    },
-    {
-      id: nanoid(),
-      eventId: sampleEvents[1].id,
-      title: "Drink Grátis",
-      type: "BRINDE",
-      description: "Uma cerveja grátis para quem chegar antes das 20h",
+      description: "Válido até 22:00",
       totalQuantity: 50,
       availableQuantity: 50,
       createdAt: new Date(),
     },
     {
-      id: nanoid(),
+      id: randomUUID(),
+      eventId: sampleEvents[1].id,
+      title: "Drink grátis",
+      type: "GRATIS",
+      description: "Primeira bebida por conta da casa",
+      totalQuantity: 30,
+      availableQuantity: 30,
+      createdAt: new Date(),
+    },
+    {
+      id: randomUUID(),
       eventId: sampleEvents[2].id,
-      title: "VIP Experience",
+      title: "Acesso VIP",
       type: "UPGRADE",
-      description: "Acesso à área VIP com open bar",
+      description: "Área VIP com open bar",
       totalQuantity: 20,
       availableQuantity: 20,
       createdAt: new Date(),
