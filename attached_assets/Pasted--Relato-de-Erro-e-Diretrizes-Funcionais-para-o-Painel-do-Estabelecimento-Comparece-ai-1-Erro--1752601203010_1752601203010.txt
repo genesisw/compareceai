@@ -1,0 +1,126 @@
+✅ Relato de Erro e Diretrizes Funcionais para o Painel do Estabelecimento – Comparece.ai
+🐞 1. Erro ao promover usuário
+Conseguimos promover o usuário digitalsimetria@gmail.com. No entanto, ao clicar em "Promover", o sistema apresentou um erro 500 no backend:
+
+diff
+Copiar
+Editar
+POST https://<host>/api/admin/promote/45077607  
+500 (Internal Server Error)
+
+Ocorrência:  
+- Arquivo: frame_ant.js  
+- Linha: 2  
+- Método: handlePromoteUser (admin.tsx:70)
+Apesar do erro, o usuário foi promovido com sucesso. Solicitamos, contudo, a correção do endpoint para evitar falhas futuras.
+
+🧭 2. Funcionalidades obrigatórias ao promover um usuário a "Dono de Estabelecimento"
+Assim que o usuário for promovido ao papel de Dono de Estabelecimento, o sistema deverá exibir um dashboard personalizado com as seguintes funcionalidades:
+
+2.1. Cadastro de Evento
+Exibir um formulário com os seguintes campos obrigatórios:
+
+Título do evento
+
+Data do evento
+
+Hora do evento
+
+Descrição do evento
+
+Local do evento (deve puxar locais previamente cadastrados pelo dono – podendo ter mais de um)
+
+Benefícios do evento (separados por vírgula: ex. "vale chopp, entrada grátis, brinde")
+
+Upload de imagem em formato stories (9:16) — pensada para ser compartilhada diretamente no Instagram.
+
+💡 Reforçar a visualização mobile dos dados do evento e imagem, como mostrado na Imagem 2.
+
+👥 3. Gestão de Funcionários e Promoters
+3.1. Promover funcionário
+O Dono do Estabelecimento pode promover um usuário a Funcionário
+
+Função do funcionário: ler QR Code e validar check-ins (nome na lista / lista VIP)
+
+3.2. Promover a Promoter
+O dono pode promover um usuário a Promoter
+
+O sistema deverá gerar automaticamente:
+
+Um código único de promoter
+
+Uma URL de convite personalizada
+
+Todos que acessarem o app por essa URL entram na “pirâmide de convidados” do promoter.
+
+🔮 Observação: futuramente poderá haver um sistema de recompensas baseado nessa rede.
+
+🗓️ 4. Listagem de Eventos (Dashboard Público)
+Seguir o modelo visual da Imagem 3:
+
+Exibir cards com os eventos disponíveis
+
+Botões de reação:
+
+"Eu vou comparecer"
+
+"Pensando em ir"
+
+Ao clicar em "Eu vou comparecer", o sistema deve:
+
+Adicionar o nome na lista
+
+Gerar um QR Code pessoal do evento (Imagem 4)
+
+🎟️ 5. Check-in e Benefícios
+A leitura do QR Code poderá ser feita por:
+
+Funcionário
+
+Dono do estabelecimento
+
+Após o check-in:
+
+O nome é adicionado à lista de presença
+
+Os benefícios do evento ficam disponíveis ao usuário (ex: vale-brinde, cupom)
+
+Visual semelhante à Imagem 5.
+
+🏪 6. Configuração do Estabelecimento
+Disponibilizar um menu de configurações administrativas, conforme Imagem 6, com campos como:
+
+Nome do local
+
+Endereço(s)
+
+Dias e horários de funcionamento
+
+Capa do estabelecimento
+
+Descrição pública
+
+Categorias (ex: bar, balada, pagode, etc.)
+
+🧑‍💼 7. Lista de Funcionários e Promoters
+Tela administrativa (Imagem 7) para:
+
+Visualizar todos os usuários associados ao estabelecimento
+
+Editar permissões
+
+Despromover (retornar a usuário comum)
+
+📊 8. Estatísticas do Estabelecimento
+Tela de insights (Imagem 9) com dados como:
+
+Total de eventos criados
+
+Total de check-ins por evento
+
+Total de cupons/benefícios resgatados
+
+Promoção mais acessada
+
+Promoter com mais conversões
+

@@ -286,15 +286,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const targetUserId = req.params.userId;
-      const { role } = req.body;
       
-      if (role === 'DONO_ESTABELECIMENTO') {
-        await promoteUserToEstablishmentOwner(targetUserId);
-        res.json({ message: `User ${targetUserId} promoted to DONO_ESTABELECIMENTO!` });
-      } else {
-        await promoteUserToAdmin(targetUserId);
-        res.json({ message: `User ${targetUserId} promoted to SUPER_ADMIN!` });
-      }
+      await promoteUserToEstablishmentOwner(targetUserId);
+      res.json({ message: `User ${targetUserId} promoted to DONO_ESTABELECIMENTO!` });
     } catch (error) {
       console.error("Error promoting user:", error);
       res.status(500).json({ message: "Failed to promote user" });
@@ -318,15 +312,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid role" });
       }
 
-      await storage.upsertUser({
-        id: targetUserId,
-        role
-      });
+      await storage.updateUserRole(targetUserId, role);
       
       res.json({ message: `User ${targetUserId} promoted to ${role}!` });
     } catch (error) {
       console.error("Error promoting user:", error);
       res.status(500).json({ message: "Failed to promote user" });
+    }
+  });
+
+  // Establishment management routes
+  app.get('/api/establishment/current', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      res.json(establishments[0] || null);
+    } catch (error) {
+      console.error("Error fetching establishment:", error);
+      res.status(500).json({ message: "Failed to fetch establishment" });
+    }
+  });
+
+  app.get('/api/establishment/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      if (!establishments.length) {
+        return res.json([]);
+      }
+
+      const events = await storage.getEventsByEstablishment(establishments[0].id);
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  app.post('/api/establishment/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      if (!establishments.length) {
+        return res.status(400).json({ message: "No establishment found" });
+      }
+
+      const eventData = {
+        ...req.body,
+        establishmentId: establishments[0].id,
+        city: establishments[0].city,
+        startDatetime: new Date(req.body.startDatetime),
+        endDatetime: req.body.endDatetime ? new Date(req.body.endDatetime) : undefined
+      };
+
+      const event = await storage.createEvent(eventData);
+      res.json(event);
+    } catch (error) {
+      console.error("Error creating event:", error);
+      res.status(500).json({ message: "Failed to create event" });
+    }
+  });
+
+  app.get('/api/establishment/staff', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      if (!establishments.length) {
+        return res.json([]);
+      }
+
+      const staff = await storage.getEstablishmentStaff(establishments[0].id);
+      res.json(staff);
+    } catch (error) {
+      console.error("Error fetching staff:", error);
+      res.status(500).json({ message: "Failed to fetch staff" });
+    }
+  });
+
+  app.get('/api/establishment/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      if (!establishments.length) {
+        return res.json({
+          totalViews: 0,
+          totalReactions: 0,
+          totalCheckIns: 0,
+          conversionRate: 0,
+          totalEvents: 0,
+          totalStaff: 0,
+          totalPromoters: 0
+        });
+      }
+
+      const stats = await storage.getEstablishmentStats(establishments[0].id);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.put('/api/establishment/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      if (!establishments.length) {
+        return res.status(400).json({ message: "No establishment found" });
+      }
+
+      const updatedEstablishment = await storage.updateEstablishment(establishments[0].id, req.body);
+      res.json(updatedEstablishment);
+    } catch (error) {
+      console.error("Error updating establishment:", error);
+      res.status(500).json({ message: "Failed to update establishment" });
     }
   });
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,15 +8,116 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Users, UserPlus, Crown } from "lucide-react";
+import { Building, Users, UserPlus, Crown, Calendar, Settings, BarChart3, Plus, QrCode, Eye } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { EventWithDetails } from "@/types";
 
 export default function EstablishmentAdmin() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
+  
+  // Employee Management
   const [userId, setUserId] = useState("");
   const [selectedRole, setSelectedRole] = useState<"FUNCIONARIO" | "PROMOTER">("FUNCIONARIO");
   const [isPromoving, setIsPromoving] = useState(false);
+  
+  // Event Creation
+  const [eventData, setEventData] = useState({
+    title: "",
+    description: "",
+    category: "",
+    startDatetime: "",
+    endDatetime: "",
+    city: "",
+    benefits: ""
+  });
+  
+  // Establishment Settings
+  const [establishmentSettings, setEstablishmentSettings] = useState({
+    name: "",
+    description: "",
+    city: "",
+    state: "",
+    phone: "",
+    openingHours: "",
+    category: ""
+  });
+
+  // Data fetching
+  const { data: establishment } = useQuery({
+    queryKey: ['/api/establishment/current'],
+    enabled: user?.role === 'DONO_ESTABELECIMENTO'
+  });
+
+  const { data: events = [] } = useQuery({
+    queryKey: ['/api/establishment/events'],
+    enabled: user?.role === 'DONO_ESTABELECIMENTO'
+  });
+
+  const { data: staff = [] } = useQuery({
+    queryKey: ['/api/establishment/staff'],
+    enabled: user?.role === 'DONO_ESTABELECIMENTO'
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ['/api/establishment/stats'],
+    enabled: user?.role === 'DONO_ESTABELECIMENTO'
+  });
+
+  // Mutations for actions
+  const createEventMutation = useMutation({
+    mutationFn: async (eventData: any) => {
+      const response = await apiRequest("POST", "/api/establishment/events", eventData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso!",
+        description: "Evento criado com sucesso.",
+      });
+      setEventData({
+        title: "",
+        description: "",
+        category: "",
+        startDatetime: "",
+        endDatetime: "",
+        city: "",
+        benefits: ""
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/establishment/events'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Falha ao criar evento",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateEstablishmentMutation = useMutation({
+    mutationFn: async (settings: any) => {
+      const response = await apiRequest("PUT", "/api/establishment/settings", settings);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso!",
+        description: "Configurações atualizadas com sucesso.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/establishment/current'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Falha ao atualizar configurações",
+        variant: "destructive",
+      });
+    }
+  });
 
   const handlePromoteEmployee = async () => {
     if (!userId.trim()) return;
@@ -33,6 +134,7 @@ export default function EstablishmentAdmin() {
       });
       
       setUserId("");
+      queryClient.invalidateQueries({ queryKey: ['/api/establishment/staff'] });
     } catch (error) {
       toast({
         title: "Erro",
@@ -42,6 +144,23 @@ export default function EstablishmentAdmin() {
     } finally {
       setIsPromoving(false);
     }
+  };
+
+  const handleCreateEvent = async () => {
+    if (!eventData.title || !eventData.category || !eventData.startDatetime) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos obrigatórios",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    createEventMutation.mutate(eventData);
+  };
+
+  const handleUpdateSettings = async () => {
+    updateEstablishmentMutation.mutate(establishmentSettings);
   };
 
   if (isLoading) {

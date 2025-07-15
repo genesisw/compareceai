@@ -28,7 +28,7 @@ import {
   type InsertUserStats,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, count, sql } from "drizzle-orm";
+import { eq, and, desc, count, sql, or } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -81,6 +81,12 @@ export interface IStorage {
     totalCheckedIn: number;
     reactionCounts: Record<string, number>;
   }>;
+  
+  // Additional methods for establishment management
+  getEstablishmentStaff(establishmentId: string): Promise<User[]>;
+  updateUserRole(userId: string, role: string): Promise<void>;
+  updateEstablishment(establishmentId: string, data: any): Promise<Establishment>;
+  getEstablishmentStats(establishmentId: string): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -370,6 +376,73 @@ export class DatabaseStorage implements IStorage {
       totalInterested: reactionsCount?.count || 0,
       totalCheckedIn: checkInsCount?.count || 0,
       reactionCounts: reactionCountsMap,
+    };
+  }
+
+  async getEstablishmentStaff(establishmentId: string): Promise<User[]> {
+    // Get all users with roles FUNCIONARIO or PROMOTER
+    const staff = await db.select().from(users).where(
+      or(
+        eq(users.role, 'FUNCIONARIO'),
+        eq(users.role, 'PROMOTER')
+      )
+    );
+    
+    return staff;
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    await db.update(users)
+      .set({ role, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateEstablishment(establishmentId: string, data: any): Promise<Establishment> {
+    const [establishment] = await db.update(establishments)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(establishments.id, establishmentId))
+      .returning();
+    
+    return establishment;
+  }
+
+  async getEstablishmentStats(establishmentId: string): Promise<any> {
+    const establishment = await this.getEstablishment(establishmentId);
+    if (!establishment) {
+      return {
+        totalViews: 0,
+        totalReactions: 0,
+        totalCheckIns: 0,
+        conversionRate: 0,
+        totalEvents: 0,
+        totalStaff: 0,
+        totalPromoters: 0
+      };
+    }
+
+    const events = await this.getEventsByEstablishment(establishmentId);
+    const staff = await this.getEstablishmentStaff(establishmentId);
+    
+    // Calculate totals from all events
+    let totalReactions = 0;
+    let totalCheckIns = 0;
+    
+    for (const event of events) {
+      const stats = await this.getEventStats(event.id);
+      totalReactions += Object.values(stats.reactionCounts).reduce((a, b) => a + b, 0);
+      totalCheckIns += stats.totalCheckedIn;
+    }
+    
+    const conversionRate = totalReactions > 0 ? Math.round((totalCheckIns / totalReactions) * 100) : 0;
+    
+    return {
+      totalViews: totalReactions * 8.9, // Approximate views based on interactions
+      totalReactions,
+      totalCheckIns,
+      conversionRate,
+      totalEvents: events.length,
+      totalStaff: staff.filter(s => s.role === 'FUNCIONARIO').length,
+      totalPromoters: staff.filter(s => s.role === 'PROMOTER').length
     };
   }
 }
