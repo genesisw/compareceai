@@ -72,7 +72,11 @@ export default function Auth() {
     <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Comparece.ai</h1>
+          <img 
+            src="/logo-comparece-ai.png" 
+            alt="Comparece.ai" 
+            className="mx-auto mb-4 h-12 w-auto"
+          />
           <p className="text-gray-400">Conectando você à vida noturna</p>
         </div>
 

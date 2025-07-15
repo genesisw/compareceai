@@ -9,16 +9,12 @@ export default function Landing() {
       <div className="max-w-md mx-auto min-h-screen flex flex-col">
         {/* Header */}
         <header className="p-6 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-12 h-12 bg-roxo-magenta rounded-2xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>
-            </div>
-            <div>
-              <span className="text-roxo-magenta font-bold text-3xl">COMPARECE</span>
-              <span className="text-laranja-vibrante font-bold text-3xl">.AI</span>
-            </div>
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/logo-comparece-ai.png" 
+              alt="Comparece.ai" 
+              className="h-16 w-auto"
+            />
           </div>
           <p className="text-gray-300 text-lg">
             Sua presença, seus benefícios
