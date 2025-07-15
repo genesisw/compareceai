@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Landing() {
+  const [, setLocation] = useLocation();
   return (
     <div className="min-h-screen bg-dark-bg text-white">
       <div className="max-w-md mx-auto min-h-screen flex flex-col">
@@ -88,7 +90,7 @@ export default function Landing() {
         {/* Footer */}
         <div className="p-6 space-y-4">
           <Button
-            onClick={() => window.location.href = '/api/login'}
+            onClick={() => setLocation('/auth')}
             className="w-full bg-roxo-magenta hover:bg-roxo-escuro text-white py-4 text-lg font-semibold rounded-2xl"
           >
             Começar agora

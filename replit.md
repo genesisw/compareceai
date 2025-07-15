@@ -34,10 +34,11 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
-- **Provider**: Replit Auth with OIDC
-- **Session Storage**: PostgreSQL-backed sessions
+- **Provider**: Traditional username/password authentication with Passport.js
+- **Session Storage**: PostgreSQL-backed sessions with connect-pg-simple
 - **User Roles**: USUARIO, FUNCIONARIO, DONO_ESTABELECIMENTO, SUPER_ADMIN
 - **Authorization**: Role-based access control throughout the application
+- **Features**: Login/Register forms, password hashing with scrypt, session management
 
 ### Event Management
 - **Event Categories**: PAGODE, SERTANEJO, TECHNO, FUNK, FORRÓ, ROCK, SAMBA
@@ -94,10 +95,10 @@ Preferred communication style: Simple, everyday language.
 - **@replit/vite-plugin-***: Replit integration plugins
 
 ### Authentication
-- **openid-client**: OIDC authentication
-- **passport**: Authentication middleware
+- **passport**: Authentication middleware with LocalStrategy
 - **express-session**: Session management
 - **connect-pg-simple**: PostgreSQL session store
+- **crypto**: Password hashing with scrypt algorithm
 
 ## Deployment Strategy
 
@@ -112,10 +113,10 @@ Preferred communication style: Simple, everyday language.
 - **Assets**: Served from `/dist/public` directory
 - **Database**: Managed PostgreSQL with Drizzle migrations
 
-### Replit Integration
-- **Auth Provider**: Replit OIDC for user authentication
+### Development Integration
 - **Development Tools**: Cartographer plugin for enhanced debugging
 - **Error Handling**: Runtime error modal for development
+- **Database**: Neon PostgreSQL with automated migrations
 
 ### Security Considerations
 - **Session Security**: HTTP-only cookies with secure flags
