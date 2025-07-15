@@ -4,7 +4,8 @@ const urlsToCache = [
   '/logo-comparece-ai.png',
   '/icon-192.png',
   '/icon-512.png',
-  '/manifest.json'
+  '/manifest.json',
+  '/favicon.ico'
 ];
 
 // Install event

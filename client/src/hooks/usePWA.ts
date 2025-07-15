@@ -15,10 +15,13 @@ export function usePWA() {
 
   useEffect(() => {
     // Check if app is already installed
-    setIsInstalled(window.matchMedia('(display-mode: standalone)').matches);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    console.log('App is installed:', isStandalone);
+    setIsInstalled(isStandalone);
 
     // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      console.log('Before install prompt event fired');
       e.preventDefault();
       setDeferredPrompt(e);
       setIsInstallable(true);
@@ -26,6 +29,7 @@ export function usePWA() {
 
     // Listen for appinstalled event
     const handleAppInstalled = () => {
+      console.log('App installed event fired');
       setIsInstalled(true);
       setIsInstallable(false);
       setDeferredPrompt(null);
@@ -41,14 +45,24 @@ export function usePWA() {
   }, []);
 
   const installApp = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      console.log('No deferred prompt available');
+      return;
+    }
 
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      setDeferredPrompt(null);
-      setIsInstallable(false);
+    try {
+      console.log('Prompting for installation...');
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      console.log('User choice:', outcome);
+      
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+      }
+    } catch (error) {
+      console.error('Error during installation:', error);
     }
   };
 

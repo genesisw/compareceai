@@ -2,7 +2,7 @@
   "name": "Comparece.ai - Plataforma de Eventos Noturnos",
   "short_name": "Comparece.ai",
   "description": "Sua presença, seus benefícios. Conecte-se à vida noturna e ganhe recompensas por comparecer aos melhores eventos.",
-  "start_url": "/",
+  "start_url": "/?utm_source=pwa",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#BB2288",

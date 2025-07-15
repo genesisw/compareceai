@@ -8,6 +8,8 @@ export default function InstallPrompt() {
   const { isInstallable, installApp, isInstalled } = usePWA();
   const [dismissed, setDismissed] = useState(false);
 
+  console.log('InstallPrompt state:', { isInstallable, isInstalled, dismissed });
+
   if (!isInstallable || isInstalled || dismissed) {
     return null;
   }
@@ -36,7 +38,10 @@ export default function InstallPrompt() {
       <CardFooter className="pt-0">
         <div className="flex gap-2 w-full">
           <Button
-            onClick={installApp}
+            onClick={() => {
+              console.log('Install button clicked');
+              installApp();
+            }}
             className="flex-1 bg-roxo-magenta hover:bg-roxo-magenta/90 text-white"
           >
             <Download className="h-4 w-4 mr-2" />
