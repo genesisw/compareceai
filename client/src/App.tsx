@@ -11,6 +11,7 @@ import EventDetail from "@/pages/event-detail";
 import Dashboard from "@/pages/dashboard";
 import Employee from "@/pages/employee";
 import Profile from "@/pages/profile";
+import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -36,6 +37,7 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/employee" component={Employee} />
           <Route path="/profile" component={Profile} />
+          <Route path="/admin" component={Admin} />
         </>
       )}
       <Route component={NotFound} />

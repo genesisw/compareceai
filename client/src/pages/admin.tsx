@@ -1,0 +1,266 @@
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Settings, Users, Database, Crown } from "lucide-react";
+
+export default function Admin() {
+  const { user, isLoading } = useAuth();
+  const { toast } = useToast();
+  const [userId, setUserId] = useState("");
+  const [isPromoving, setIsPromoving] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  const handleAutoPromote = async () => {
+    if (!user?.id) return;
+    
+    setIsPromoving(true);
+    try {
+      await apiRequest("/api/admin/auto-promote", {
+        method: "POST",
+        body: JSON.stringify({ userId: user.id }),
+      });
+      
+      toast({
+        title: "Sucesso!",
+        description: "Você foi promovido a Super Admin e o banco foi populado com eventos de exemplo.",
+      });
+      
+      // Refresh the page after success
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao promover usuário",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPromoving(false);
+    }
+  };
+
+  const handleSeedDatabase = async () => {
+    setIsSeeding(true);
+    try {
+      await apiRequest("/api/admin/seed", {
+        method: "POST",
+      });
+      
+      toast({
+        title: "Sucesso!",
+        description: "Base de dados populada com eventos de exemplo.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao popular banco de dados",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  const handlePromoteUser = async () => {
+    if (!userId.trim()) return;
+    
+    setIsPromoving(true);
+    try {
+      await apiRequest(`/api/admin/promote/${userId}`, {
+        method: "POST",
+      });
+      
+      toast({
+        title: "Sucesso!",
+        description: `Usuário ${userId} promovido a Super Admin.`,
+      });
+      
+      setUserId("");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao promover usuário",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPromoving(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <Crown className="h-8 w-8 text-primary" />
+            <h1 className="text-4xl font-bold text-primary">Admin Panel</h1>
+          </div>
+          <p className="text-muted-foreground">
+            Painel administrativo do Comparece.ai
+          </p>
+        </div>
+
+        {/* User Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Informações do Usuário
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">ID do Usuário</Label>
+                <p className="text-sm text-muted-foreground font-mono">{user?.id || "Não logado"}</p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Role Atual</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge variant={user?.role === 'SUPER_ADMIN' ? 'default' : 'secondary'}>
+                    {user?.role || "USUARIO"}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Nome</Label>
+                <p className="text-sm text-muted-foreground">
+                  {user?.firstName && user?.lastName 
+                    ? `${user.firstName} ${user.lastName}` 
+                    : "Nome não disponível"}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Email</Label>
+                <p className="text-sm text-muted-foreground">{user?.email || "Email não disponível"}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Setup */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Configuração Rápida
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">Primeira Configuração</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Clique no botão abaixo para se tornar Super Admin e popular o banco com eventos de exemplo.
+              </p>
+              <Button 
+                onClick={handleAutoPromote} 
+                disabled={isPromoving}
+                className="w-full"
+              >
+                {isPromoving ? "Configurando..." : "Configurar Admin + Eventos"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Admin Actions */}
+        {user?.role === 'SUPER_ADMIN' && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  Gerenciar Banco de Dados
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Button 
+                      onClick={handleSeedDatabase} 
+                      disabled={isSeeding}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      {isSeeding ? "Populando..." : "Popular com Eventos"}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Crown className="h-5 w-5" />
+                  Promover Usuário
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="userId">ID do Usuário</Label>
+                  <Input
+                    id="userId"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    placeholder="Digite o ID do usuário"
+                  />
+                </div>
+                <Button 
+                  onClick={handlePromoteUser} 
+                  disabled={isPromoving || !userId.trim()}
+                  className="w-full"
+                >
+                  {isPromoving ? "Promovendo..." : "Promover a Super Admin"}
+                </Button>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* Instructions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Instruções</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <h3 className="font-semibold">Como usar o Admin Panel:</h3>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Faça login com sua conta Replit</li>
+                <li>• Use "Configurar Admin + Eventos" para primeira configuração</li>
+                <li>• Acesse o Dashboard após ser promovido</li>
+                <li>• Gerencie eventos e estabelecimentos pelo painel</li>
+              </ul>
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <h3 className="font-semibold">Funcionalidades do Sistema:</h3>
+              <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                <li>• Gerenciar eventos e estabelecimentos</li>
+                <li>• Validar check-ins via QR Code</li>
+                <li>• Acompanhar estatísticas de engajamento</li>
+                <li>• Sistema de gamificação com níveis</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

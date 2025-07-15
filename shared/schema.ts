@@ -119,7 +119,7 @@ export const promoterLinks = pgTable("promoter_links", {
 // User stats table for gamification
 export const userStats = pgTable("user_stats", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: varchar("user_id").references(() => users.id),
+  userId: varchar("user_id").references(() => users.id).unique().notNull(),
   totalCheckIns: integer("total_check_ins").default(0),
   monthlyCheckIns: integer("monthly_check_ins").default(0),
   level: text("level").default("BRONZE"),

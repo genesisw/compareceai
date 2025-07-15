@@ -5,6 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertEventSchema, insertEventReactionSchema, insertIncentiveSchema, insertCheckInSchema } from "@shared/schema";
 import { z } from "zod";
 import { nanoid } from "nanoid";
+import { seedDatabase, promoteUserToAdmin } from "./seed";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -254,6 +255,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating incentive:", error);
       res.status(500).json({ message: "Failed to create incentive" });
+    }
+  });
+
+  // Admin routes
+  app.post('/api/admin/seed', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: "Only super admins can seed the database" });
+      }
+
+      await seedDatabase();
+      res.json({ message: "Database seeded successfully!" });
+    } catch (error) {
+      console.error("Error seeding database:", error);
+      res.status(500).json({ message: "Failed to seed database" });
+    }
+  });
+
+  app.post('/api/admin/promote/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: "Only super admins can promote users" });
+      }
+
+      const targetUserId = req.params.userId;
+      await promoteUserToAdmin(targetUserId);
+      res.json({ message: `User ${targetUserId} promoted to SUPER_ADMIN!` });
+    } catch (error) {
+      console.error("Error promoting user:", error);
+      res.status(500).json({ message: "Failed to promote user" });
+    }
+  });
+
+  // Auto-promote first user (for development)
+  app.post('/api/admin/auto-promote', async (req: any, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      await promoteUserToAdmin(userId);
+      await seedDatabase();
+      res.json({ message: `User ${userId} promoted to SUPER_ADMIN and database seeded!` });
+    } catch (error) {
+      console.error("Error auto-promoting user:", error);
+      res.status(500).json({ message: "Failed to auto-promote user" });
     }
   });
 
