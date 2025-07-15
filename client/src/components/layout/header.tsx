@@ -28,9 +28,9 @@ export default function Header() {
       <div className="flex items-center space-x-4">
         <Button
           onClick={() => logoutMutation.mutate()}
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="text-gray-400 hover:text-white"
+          className="border-gray-600 text-white hover:bg-gray-700 hover:text-white"
           disabled={logoutMutation.isPending}
         >
           {logoutMutation.isPending ? 'Saindo...' : 'Logout'}

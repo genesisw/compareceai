@@ -89,7 +89,7 @@ export default function Dashboard() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">{events?.length || 0}</p>
+                    <p className="text-2xl font-bold text-white">{events?.length || 0}</p>
                     <p className="text-sm text-gray-400">Eventos</p>
                   </div>
                 </div>
@@ -105,7 +105,7 @@ export default function Dashboard() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold">0</p>
+                    <p className="text-2xl font-bold text-white">0</p>
                     <p className="text-sm text-gray-400">Check-ins</p>
                   </div>
                 </div>
