@@ -160,6 +160,13 @@ export async function promoteUserToAdmin(userId: string) {
 export async function promoteUserToEstablishmentOwner(userId: string) {
   console.log(`🔧 Promoting user ${userId} to DONO_ESTABELECIMENTO...`);
   
+  // Get user info first
+  const [user] = await db.select().from(users).where(eq(users.id, userId));
+  
+  if (!user) {
+    throw new Error(`User ${userId} not found`);
+  }
+
   // Update user role to DONO_ESTABELECIMENTO
   await db.update(users)
     .set({ role: "DONO_ESTABELECIMENTO" })
@@ -169,15 +176,20 @@ export async function promoteUserToEstablishmentOwner(userId: string) {
   const [establishment] = await db.insert(establishments)
     .values({
       id: randomUUID(),
-      name: "Meu Estabelecimento",
-      description: "Estabelecimento padrão - configure as informações",
+      name: `Estabelecimento de ${user.firstName || user.email?.split('@')[0] || 'Usuario'}`,
+      description: "Estabelecimento criado automaticamente - configure as informações",
       city: "São Paulo",
       state: "SP",
       ownerId: userId,
+      phone: "",
+      openingHours: "Segunda a Domingo 18h-04h",
+      category: "bar",
       createdAt: new Date(),
       updatedAt: new Date()
     })
     .returning();
 
   console.log(`✅ User ${userId} promoted to DONO_ESTABELECIMENTO with establishment ${establishment.id}!`);
+  
+  return { user, establishment };
 }

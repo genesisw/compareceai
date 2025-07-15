@@ -286,7 +286,7 @@ export default function EstablishmentAdminNew() {
                       value={eventData.title}
                       onChange={(e) => setEventData({...eventData, title: e.target.value})}
                       placeholder="Ex: Noite do Pagode"
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
@@ -297,14 +297,14 @@ export default function EstablishmentAdminNew() {
                       value={eventData.description}
                       onChange={(e) => setEventData({...eventData, description: e.target.value})}
                       placeholder="Descrição do evento..."
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
                   <div>
                     <Label htmlFor="category">Categoria</Label>
                     <Select value={eventData.category} onValueChange={(value) => setEventData({...eventData, category: value})}>
-                      <SelectTrigger className="bg-dark-bg border-gray-700">
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta">
                         <SelectValue placeholder="Selecione a categoria" />
                       </SelectTrigger>
                       <SelectContent>
@@ -326,7 +326,7 @@ export default function EstablishmentAdminNew() {
                       type="datetime-local"
                       value={eventData.startDatetime}
                       onChange={(e) => setEventData({...eventData, startDatetime: e.target.value})}
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
                     />
                   </div>
                   
@@ -337,7 +337,7 @@ export default function EstablishmentAdminNew() {
                       type="datetime-local"
                       value={eventData.endDatetime}
                       onChange={(e) => setEventData({...eventData, endDatetime: e.target.value})}
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert"
                     />
                   </div>
                   
@@ -348,7 +348,7 @@ export default function EstablishmentAdminNew() {
                       value={eventData.benefits}
                       onChange={(e) => setEventData({...eventData, benefits: e.target.value})}
                       placeholder="Ex: Desconto de 20% em bebidas, entrada gratuita até 23h..."
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
@@ -414,14 +414,14 @@ export default function EstablishmentAdminNew() {
                       value={userId}
                       onChange={(e) => setUserId(e.target.value)}
                       placeholder="Digite o ID do usuário"
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
                   <div>
                     <Label htmlFor="role">Função</Label>
                     <Select value={selectedRole} onValueChange={(value: "FUNCIONARIO" | "PROMOTER") => setSelectedRole(value)}>
-                      <SelectTrigger className="bg-dark-bg border-gray-700">
+                      <SelectTrigger className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -490,7 +490,7 @@ export default function EstablishmentAdminNew() {
                       value={establishmentSettings.name}
                       onChange={(e) => setEstablishmentSettings({...establishmentSettings, name: e.target.value})}
                       placeholder="Nome do seu estabelecimento"
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
@@ -501,7 +501,7 @@ export default function EstablishmentAdminNew() {
                       value={establishmentSettings.description}
                       onChange={(e) => setEstablishmentSettings({...establishmentSettings, description: e.target.value})}
                       placeholder="Descrição do estabelecimento..."
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   

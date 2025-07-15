@@ -1,0 +1,62 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+api/establishment/settings:1  Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+queryClient.ts:6 Uncaught (in promise) Error: 400: {"message":"No establishment found"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async Object.mutationFn (establishment-admin-new.tsx:127:24)Understand this error
+queryClient.ts:15  PUT https://4c4d6025-91b6-4d97-9633-06e2cd71c6cc-00-30mrb4ryin287.riker.replit.dev/api/establishment/settings 400 (Bad Request)
+apiRequest @ queryClient.ts:15
+mutationFn @ establishment-admin-new.tsx:127
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+handleUpdateSettings @ establishment-admin-new.tsx:178
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error
+queryClient.ts:6 Uncaught (in promise) Error: 400: {"message":"No establishment found"}
+    at throwIfResNotOk (queryClient.ts:6:11)
+    at async apiRequest (queryClient.ts:22:3)
+    at async Object.mutationFn (establishment-admin-new.tsx:127:24)
+throwIfResNotOk @ queryClient.ts:6
+await in throwIfResNotOk
+apiRequest @ queryClient.ts:22
+await in apiRequest
+mutationFn @ establishment-admin-new.tsx:127
+fn @ @tanstack_react-query.js?v=c79c22c3:1189
+run @ @tanstack_react-query.js?v=c79c22c3:494
+start @ @tanstack_react-query.js?v=c79c22c3:536
+execute @ @tanstack_react-query.js?v=c79c22c3:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=c79c22c3:2630
+handleUpdateSettings @ establishment-admin-new.tsx:178
+callCallback2 @ chunk-WERSD76P.js?v=c79c22c3:3674
+invokeGuardedCallbackDev @ chunk-WERSD76P.js?v=c79c22c3:3699
+invokeGuardedCallback @ chunk-WERSD76P.js?v=c79c22c3:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-WERSD76P.js?v=c79c22c3:3736
+executeDispatch @ chunk-WERSD76P.js?v=c79c22c3:7014
+processDispatchQueueItemsInOrder @ chunk-WERSD76P.js?v=c79c22c3:7034
+processDispatchQueue @ chunk-WERSD76P.js?v=c79c22c3:7043
+dispatchEventsForPlugins @ chunk-WERSD76P.js?v=c79c22c3:7051
+(anonymous) @ chunk-WERSD76P.js?v=c79c22c3:7174
+batchedUpdates$1 @ chunk-WERSD76P.js?v=c79c22c3:18913
+batchedUpdates @ chunk-WERSD76P.js?v=c79c22c3:3579
+dispatchEventForPluginEventSystem @ chunk-WERSD76P.js?v=c79c22c3:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-WERSD76P.js?v=c79c22c3:5478
+dispatchEvent @ chunk-WERSD76P.js?v=c79c22c3:5472
+dispatchDiscreteEvent @ chunk-WERSD76P.js?v=c79c22c3:5449Understand this error
