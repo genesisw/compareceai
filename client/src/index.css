@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222, 84%, 4.9%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215.4, 16.3%, 46.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222, 84%, 4.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222, 84%, 4.9%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --input: hsl(214.3, 31.8%, 91.4%);
+  --primary: hsl(329, 74%, 44%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(222, 84%, 4.9%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(222, 84%, 4.9%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(329, 74%, 44%);
+  --radius: 0.5rem;
+  
+  /* Comparece.ai brand colors */
+  --roxo-magenta: hsl(329, 74%, 44%);
+  --laranja-vibrante: hsl(29, 88%, 57%);
+  --roxo-escuro: hsl(329, 74%, 32%);
+  --preto-noturno: hsl(0, 0%, 5%);
+  --dark-bg: hsl(0, 0%, 7%);
+  --dark-card: hsl(0, 0%, 12%);
+  --dark-surface: hsl(0, 0%, 16%);
+}
+
+.dark {
+  --background: hsl(0, 0%, 7%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 16%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(0, 0%, 12%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 12%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 16%);
+  --input: hsl(0, 0%, 16%);
+  --primary: hsl(329, 74%, 44%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(0, 0%, 16%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(0, 0%, 16%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(329, 74%, 44%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-rubik antialiased bg-dark-bg text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-roxo-magenta {
+    background-color: var(--roxo-magenta);
+  }
+  
+  .bg-laranja-vibrante {
+    background-color: var(--laranja-vibrante);
+  }
+  
+  .bg-roxo-escuro {
+    background-color: var(--roxo-escuro);
+  }
+  
+  .bg-preto-noturno {
+    background-color: var(--preto-noturno);
+  }
+  
+  .bg-dark-bg {
+    background-color: var(--dark-bg);
+  }
+  
+  .bg-dark-card {
+    background-color: var(--dark-card);
+  }
+  
+  .bg-dark-surface {
+    background-color: var(--dark-surface);
+  }
+  
+  .text-roxo-magenta {
+    color: var(--roxo-magenta);
+  }
+  
+  .text-laranja-vibrante {
+    color: var(--laranja-vibrante);
+  }
+  
+  .text-roxo-escuro {
+    color: var(--roxo-escuro);
+  }
+  
+  .font-rubik {
+    font-family: 'Rubik', sans-serif;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
