@@ -136,6 +136,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generic check-in route (for testing and direct access)
+  app.post('/api/checkins', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { eventId, promoterId } = req.body;
+
+      // Generate QR code
+      const qrCode = randomUUID();
+
+      const checkInData = insertCheckInSchema.parse({
+        userId,
+        eventId: eventId || 'test-event-id',
+        promoterId,
+        qrCode,
+      });
+
+      const checkIn = await storage.createCheckIn(checkInData);
+      
+      // Update user stats
+      const userStats = await storage.getUserStats(userId);
+      await storage.updateUserStats(userId, {
+        totalCheckIns: (userStats?.totalCheckIns || 0) + 1,
+        monthlyCheckIns: (userStats?.monthlyCheckIns || 0) + 1,
+        points: (userStats?.points || 0) + 10,
+      });
+
+      res.json(checkIn);
+    } catch (error) {
+      console.error("Error creating check-in:", error);
+      res.status(500).json({ message: "Failed to create check-in" });
+    }
+  });
+
   app.post('/api/checkins/validate', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -157,6 +190,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const validatedCheckIn = await storage.validateCheckIn(checkIn.id, userId);
+      
+      // Update user points when check-in is validated
+      if (validatedCheckIn && checkIn.userId) {
+        const userStats = await storage.getUserStats(checkIn.userId);
+        await storage.updateUserStats(checkIn.userId, {
+          points: (userStats?.points || 0) + 5, // 5 points for validated check-in
+        });
+      }
+      
       res.json(validatedCheckIn);
     } catch (error) {
       console.error("Error validating check-in:", error);
@@ -184,6 +226,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
+  // User check-ins routes
+  app.get('/api/user/checkins', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const checkIns = await storage.getUserCheckIns(userId);
+      
+      res.json(checkIns);
+    } catch (error) {
+      console.error("Error fetching user check-ins:", error);
+      res.status(500).json({ message: "Failed to fetch user check-ins" });
     }
   });
 
