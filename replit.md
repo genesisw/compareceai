@@ -23,7 +23,7 @@ Preferred communication style: Simple, everyday language.
 - **Language**: TypeScript with ES modules
 - **Database**: PostgreSQL with Neon Database (serverless)
 - **ORM**: Drizzle ORM for type-safe database operations
-- **Authentication**: Replit Auth with OpenID Connect
+- **Authentication**: Traditional username/password with Passport.js Local Strategy
 - **Session Management**: Express sessions with PostgreSQL storage
 
 ### Mobile-First Design
@@ -34,11 +34,12 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
-- **Provider**: Traditional username/password authentication with Passport.js
+- **Provider**: Traditional username/password authentication with Passport.js Local Strategy
 - **Session Storage**: PostgreSQL-backed sessions with connect-pg-simple
 - **User Roles**: USUARIO, FUNCIONARIO, DONO_ESTABELECIMENTO, SUPER_ADMIN
 - **Authorization**: Role-based access control throughout the application
 - **Features**: Login/Register forms, password hashing with scrypt, session management
+- **Test Credentials**: All users can login with password "123456"
 
 ### Event Management
 - **Event Categories**: PAGODE, SERTANEJO, TECHNO, FUNK, FORRÓ, ROCK, SAMBA
@@ -117,6 +118,7 @@ Preferred communication style: Simple, everyday language.
 - **Development Tools**: Cartographer plugin for enhanced debugging
 - **Error Handling**: Runtime error modal for development
 - **Database**: Neon PostgreSQL with automated migrations
+- **Documentation**: Comprehensive context documentation in docs/CONTEXT.md
 
 ### Security Considerations
 - **Session Security**: HTTP-only cookies with secure flags
