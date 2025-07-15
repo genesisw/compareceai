@@ -139,6 +139,13 @@ export async function seedDatabase() {
 export async function promoteUserToAdmin(userId: string) {
   console.log(`🔧 Promoting user ${userId} to SUPER_ADMIN...`);
   
+  // Check if user exists and get current data
+  const existingUser = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  
+  if (existingUser.length === 0) {
+    throw new Error(`User ${userId} not found`);
+  }
+  
   // Update user role to SUPER_ADMIN
   await db.update(users)
     .set({ role: "SUPER_ADMIN" })
@@ -150,4 +157,20 @@ export async function promoteUserToAdmin(userId: string) {
     .where(eq(establishments.ownerId, "admin-user"));
 
   console.log(`✅ User ${userId} promoted to SUPER_ADMIN!`);
+}
+
+export async function promoteUserToEstablishmentOwner(userId: string, establishmentId: string) {
+  console.log(`🔧 Promoting user ${userId} to DONO_ESTABELECIMENTO...`);
+  
+  // Update user role to DONO_ESTABELECIMENTO
+  await db.update(users)
+    .set({ role: "DONO_ESTABELECIMENTO" })
+    .where(eq(users.id, userId));
+
+  // Update establishment to belong to this owner
+  await db.update(establishments)
+    .set({ ownerId: userId })
+    .where(eq(establishments.id, establishmentId));
+
+  console.log(`✅ User ${userId} promoted to DONO_ESTABELECIMENTO!`);
 }

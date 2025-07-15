@@ -22,10 +22,7 @@ export default function Admin() {
     
     setIsPromoving(true);
     try {
-      await apiRequest("/api/admin/auto-promote", {
-        method: "POST",
-        body: JSON.stringify({ userId: user.id }),
-      });
+      await apiRequest("POST", "/api/admin/auto-promote", { userId: user.id });
       
       toast({
         title: "Sucesso!",
@@ -48,9 +45,7 @@ export default function Admin() {
   const handleSeedDatabase = async () => {
     setIsSeeding(true);
     try {
-      await apiRequest("/api/admin/seed", {
-        method: "POST",
-      });
+      await apiRequest("POST", "/api/admin/seed");
       
       toast({
         title: "Sucesso!",
@@ -72,9 +67,7 @@ export default function Admin() {
     
     setIsPromoving(true);
     try {
-      await apiRequest(`/api/admin/promote/${userId}`, {
-        method: "POST",
-      });
+      await apiRequest("POST", `/api/admin/promote/${userId}`);
       
       toast({
         title: "Sucesso!",
@@ -154,29 +147,59 @@ export default function Admin() {
         </Card>
 
         {/* Quick Setup */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Configuração Rápida
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-muted/50 p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Primeira Configuração</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Clique no botão abaixo para se tornar Super Admin e popular o banco com eventos de exemplo.
-              </p>
-              <Button 
-                onClick={handleAutoPromote} 
-                disabled={isPromoving}
-                className="w-full"
-              >
-                {isPromoving ? "Configurando..." : "Configurar Admin + Eventos"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {user?.email === 'luiscpaim@gmail.com' && user?.role !== 'SUPER_ADMIN' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Configuração Rápida
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-2">Primeira Configuração</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Clique no botão abaixo para se tornar Super Admin e popular o banco com eventos de exemplo.
+                </p>
+                <Button 
+                  onClick={handleAutoPromote} 
+                  disabled={isPromoving}
+                  className="w-full"
+                >
+                  {isPromoving ? "Configurando..." : "Configurar Admin + Eventos"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Access Restriction Message */}
+        {user?.email !== 'luiscpaim@gmail.com' && user?.role !== 'SUPER_ADMIN' && user?.role !== 'DONO_ESTABELECIMENTO' && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Crown className="h-5 w-5" />
+                Acesso Restrito
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-2">Permissões Necessárias</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Você precisa ser promovido pelo Super Admin para acessar as funcionalidades administrativas.
+                </p>
+                <div className="text-sm text-muted-foreground">
+                  <p><strong>Papéis disponíveis:</strong></p>
+                  <ul className="ml-4 mt-2 space-y-1">
+                    <li>• <strong>DONO_ESTABELECIMENTO</strong> - Gerenciar seus estabelecimentos e eventos</li>
+                    <li>• <strong>FUNCIONARIO</strong> - Validar check-ins e gerenciar eventos</li>
+                    <li>• <strong>PROMOTER</strong> - Criar links promocionais</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Admin Actions */}
         {user?.role === 'SUPER_ADMIN' && (

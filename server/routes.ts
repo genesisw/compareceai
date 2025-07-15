@@ -2,10 +2,10 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertEventSchema, insertEventReactionSchema, insertIncentiveSchema, insertCheckInSchema } from "@shared/schema";
+import { insertEventSchema, insertEventReactionSchema, insertIncentiveSchema, insertCheckInSchema, insertEstablishmentSchema } from "@shared/schema";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { seedDatabase, promoteUserToAdmin } from "./seed";
+import { seedDatabase, promoteUserToAdmin, promoteUserToEstablishmentOwner } from "./seed";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -294,12 +294,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auto-promote first user (for development)
+  // Auto-promote specific user (luiscpaim@gmail.com only)
   app.post('/api/admin/auto-promote', async (req: any, res) => {
     try {
       const { userId } = req.body;
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Check if user exists and get their email
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Only allow luiscpaim@gmail.com to become super admin
+      if (user.email !== 'luiscpaim@gmail.com') {
+        return res.status(403).json({ message: "Only luiscpaim@gmail.com can become Super Admin" });
       }
 
       await promoteUserToAdmin(userId);
@@ -308,6 +319,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error auto-promoting user:", error);
       res.status(500).json({ message: "Failed to auto-promote user" });
+    }
+  });
+
+  // Establishment management routes
+  app.post('/api/establishments', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
+        return res.status(403).json({ message: "Insufficient permissions" });
+      }
+
+      const establishmentData = insertEstablishmentSchema.parse({
+        ...req.body,
+        ownerId: userId,
+      });
+
+      const establishment = await storage.createEstablishment(establishmentData);
+      res.json(establishment);
+    } catch (error) {
+      console.error("Error creating establishment:", error);
+      res.status(500).json({ message: "Failed to create establishment" });
+    }
+  });
+
+  app.get('/api/establishments', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || !['SUPER_ADMIN', 'DONO_ESTABELECIMENTO'].includes(user.role)) {
+        return res.status(403).json({ message: "Insufficient permissions" });
+      }
+
+      const establishments = await storage.getEstablishmentsByOwner(userId);
+      res.json(establishments);
+    } catch (error) {
+      console.error("Error fetching establishments:", error);
+      res.status(500).json({ message: "Failed to fetch establishments" });
+    }
+  });
+
+  // Route to promote user to establishment owner
+  app.post('/api/admin/promote-owner', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user || user.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: "Only super admins can promote users to establishment owner" });
+      }
+
+      const { targetUserId, establishmentId } = req.body;
+      if (!targetUserId || !establishmentId) {
+        return res.status(400).json({ message: "User ID and establishment ID are required" });
+      }
+
+      await promoteUserToEstablishmentOwner(targetUserId, establishmentId);
+      res.json({ message: `User ${targetUserId} promoted to establishment owner!` });
+    } catch (error) {
+      console.error("Error promoting user to establishment owner:", error);
+      res.status(500).json({ message: "Failed to promote user to establishment owner" });
     }
   });
 

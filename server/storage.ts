@@ -309,18 +309,32 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats> {
-    const [updatedStats] = await db
-      .insert(userStats)
-      .values({ userId, ...stats })
-      .onConflictDoUpdate({
-        target: userStats.userId,
-        set: {
+    // First try to get existing stats
+    const existingStats = await this.getUserStats(userId);
+    
+    if (existingStats) {
+      // Update existing record
+      const [updatedStats] = await db
+        .update(userStats)
+        .set({
           ...stats,
           updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return updatedStats;
+        })
+        .where(eq(userStats.userId, userId))
+        .returning();
+      return updatedStats;
+    } else {
+      // Create new record
+      const [newStats] = await db
+        .insert(userStats)
+        .values({
+          userId,
+          ...stats,
+          updatedAt: new Date(),
+        })
+        .returning();
+      return newStats;
+    }
   }
 
   async getEventStats(eventId: string): Promise<{
