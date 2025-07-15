@@ -1,0 +1,100 @@
+✅ PASSO 1 — Verifique se auth.tsx existe no frontend
+Caminho esperado: client/src/pages/auth.tsx ou algo como client/src/pages/login.tsx.
+
+Se estiver usando React Router, o App pode estar esperando um <Route path="/auth" element={<AuthPage />} /> e tentando importar um componente que não existe.
+
+Ação:
+
+Verifique no App.tsx:
+
+tsx
+Copiar
+Editar
+import AuthPage from './pages/auth'; // Verifique se este caminho existe
+Caso não exista o arquivo auth.tsx, crie um rapidamente:
+
+tsx
+Copiar
+Editar
+// client/src/pages/auth.tsx
+export default function AuthPage() {
+  return <div>Página de Autenticação</div>;
+}
+✅ PASSO 2 — Testar manualmente as rotas do backend
+Use o curl, Postman ou Insomnia para testar as rotas criadas em server/routes.ts.
+
+Ações mínimas:
+
+bash
+Copiar
+Editar
+curl -X POST http://localhost/login -d 'email=teste@email.com&senha=123'
+curl -X POST http://localhost/register -d 'email=teste@email.com&senha=123'
+Certifique-se de que as rotas estão funcionando e que não há erro 404 ou 500.
+
+Se você usa cookies/sessão, verifique se o frontend está no mesmo domínio ou lidando com credentials: "include".
+
+✅ PASSO 3 — Verifique se o Vite está rodando corretamente
+Ações:
+
+Vá até client/ e execute:
+
+bash
+Copiar
+Editar
+npm run dev
+Veja se aparece no terminal algo como:
+
+arduino
+Copiar
+Editar
+VITE vX.X.X  ready in ... ms
+➜  Local:   http://localhost:5173/
+Acesse esse endereço direto. Se der erro ou tela em branco, veja o console do navegador (F12) e o terminal do Vite.
+
+✅ PASSO 4 — Verificar o roteamento do backend
+Se você tem algo como server/index.ts:
+
+ts
+Copiar
+Editar
+app.use(express.static(path.join(__dirname, '../client/dist')))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+})
+Certifique-se de que o vite build já foi executado e que existe client/dist/.
+
+✅ PASSO 5 — Verifique as importações e contextos
+Em client/src/App.tsx, certifique-se de que:
+
+O AuthProvider está no lugar certo.
+
+O hook useAuth() não dispara erro de contexto undefined.
+
+Exemplo mínimo de estrutura:
+
+tsx
+Copiar
+Editar
+import { AuthProvider } from './hooks/useAuth';
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} />
+          {/* ...outras rotas */}
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+🔁 Se ainda não funcionar...
+Me envie:
+
+O erro que aparece no console do navegador ou terminal.
+
+A estrutura de diretórios do projeto (client/, server/, etc.)
+
+O trecho do App.tsx e do routes.ts que lida com as rotas de login e register.
