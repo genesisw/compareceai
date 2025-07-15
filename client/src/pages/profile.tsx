@@ -53,6 +53,7 @@ export default function Profile() {
                 <div className="flex-1">
                   <h2 className="text-xl font-bold text-white">{getUserDisplayName()}</h2>
                   <p className="text-gray-400">{user?.email}</p>
+                  <p className="text-xs text-gray-500">ID: {user?.id}</p>
                   <div className="flex items-center space-x-2 mt-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-sm text-gray-300">Online</span>

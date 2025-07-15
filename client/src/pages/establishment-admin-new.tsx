@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Building, Users, UserPlus, Crown, Calendar, Settings, BarChart3, Plus, QrCode, Eye } from "lucide-react";
+import { Building, Users, UserPlus, Crown, Calendar, Settings, BarChart3, Plus, QrCode, Eye, TrendingUp, CheckCircle } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { EventWithDetails } from "@/types";
+import Header from "@/components/layout/header";
+import BottomNav from "@/components/layout/bottom-nav";
 
-export default function EstablishmentAdmin() {
+export default function EstablishmentAdminNew() {
   const { user, isLoading } = useAuth();
   const { toast } = useToast();
   
@@ -27,10 +30,9 @@ export default function EstablishmentAdmin() {
   const [eventData, setEventData] = useState({
     title: "",
     description: "",
-    category: "",
+    category: "PAGODE",
     startDatetime: "",
     endDatetime: "",
-    city: "",
     benefits: ""
   });
   
@@ -66,7 +68,30 @@ export default function EstablishmentAdmin() {
     enabled: user?.role === 'DONO_ESTABELECIMENTO'
   });
 
-  // Mutations for actions
+  // Employee promotion mutation
+  const promoteUserMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: string, role: string }) => {
+      const response = await apiRequest("POST", `/api/establishment/promote/${userId}`, { role });
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso!",
+        description: "Usuário promovido com sucesso",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/establishment/staff'] });
+      setUserId("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao promover usuário",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Event creation mutation
   const createEventMutation = useMutation({
     mutationFn: async (eventData: any) => {
       const response = await apiRequest("POST", "/api/establishment/events", eventData);
@@ -75,28 +100,28 @@ export default function EstablishmentAdmin() {
     onSuccess: () => {
       toast({
         title: "Sucesso!",
-        description: "Evento criado com sucesso.",
+        description: "Evento criado com sucesso",
       });
+      queryClient.invalidateQueries({ queryKey: ['/api/establishment/events'] });
       setEventData({
         title: "",
         description: "",
-        category: "",
+        category: "PAGODE",
         startDatetime: "",
         endDatetime: "",
-        city: "",
         benefits: ""
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/establishment/events'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Erro",
-        description: "Falha ao criar evento",
+        description: error.message || "Erro ao criar evento",
         variant: "destructive",
       });
-    }
+    },
   });
 
+  // Update establishment mutation
   const updateEstablishmentMutation = useMutation({
     mutationFn: async (settings: any) => {
       const response = await apiRequest("PUT", "/api/establishment/settings", settings);
@@ -105,48 +130,39 @@ export default function EstablishmentAdmin() {
     onSuccess: () => {
       toast({
         title: "Sucesso!",
-        description: "Configurações atualizadas com sucesso.",
+        description: "Configurações atualizadas com sucesso",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/establishment/current'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Erro",
-        description: "Falha ao atualizar configurações",
+        description: error.message || "Erro ao atualizar configurações",
         variant: "destructive",
       });
-    }
+    },
   });
 
-  const handlePromoteEmployee = async () => {
-    if (!userId.trim()) return;
-    
-    setIsPromoving(true);
-    try {
-      await apiRequest("POST", `/api/establishment/promote/${userId}`, {
-        role: selectedRole
-      });
-      
-      toast({
-        title: "Sucesso!",
-        description: `Usuário ${userId} promovido para ${selectedRole === 'FUNCIONARIO' ? 'Funcionário' : 'Promoter'}.`,
-      });
-      
-      setUserId("");
-      queryClient.invalidateQueries({ queryKey: ['/api/establishment/staff'] });
-    } catch (error) {
+  const handlePromoteUser = async () => {
+    if (!userId.trim()) {
       toast({
         title: "Erro",
-        description: "Falha ao promover usuário",
+        description: "Digite o ID do usuário",
         variant: "destructive",
       });
+      return;
+    }
+
+    setIsPromoving(true);
+    try {
+      await promoteUserMutation.mutateAsync({ userId, role: selectedRole });
     } finally {
       setIsPromoving(false);
     }
   };
 
   const handleCreateEvent = async () => {
-    if (!eventData.title || !eventData.category || !eventData.startDatetime) {
+    if (!eventData.title || !eventData.startDatetime || !eventData.category) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
@@ -154,217 +170,192 @@ export default function EstablishmentAdmin() {
       });
       return;
     }
-    
-    createEventMutation.mutate(eventData);
+
+    await createEventMutation.mutateAsync(eventData);
   };
 
   const handleUpdateSettings = async () => {
-    updateEstablishmentMutation.mutate(establishmentSettings);
+    await updateEstablishmentMutation.mutateAsync(establishmentSettings);
   };
-
-  // Initialize establishment settings when data is loaded
-  useEffect(() => {
-    if (establishment) {
-      setEstablishmentSettings({
-        name: establishment.name || "",
-        description: establishment.description || "",
-        city: establishment.city || "",
-        state: establishment.state || "",
-        phone: establishment.phone || "",
-        openingHours: establishment.openingHours || "",
-        category: establishment.category || ""
-      });
-    }
-  }, [establishment]);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-dark-bg text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-roxo-magenta mx-auto mb-4"></div>
+          <p>Carregando...</p>
+        </div>
       </div>
     );
   }
 
-  if (user?.role !== 'DONO_ESTABELECIMENTO') {
+  if (!user || user.role !== 'DONO_ESTABELECIMENTO') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building className="h-5 w-5" />
-                Acesso Negado
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                Você precisa ser um Dono de Estabelecimento para acessar esta página.
-              </p>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen bg-dark-bg text-white">
+        <div className="max-w-md mx-auto">
+          <Header />
+          <div className="p-4 text-center">
+            <h1 className="text-2xl font-bold mb-4">Acesso negado</h1>
+            <p className="text-gray-400">Você não tem permissão para acessar esta página.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col gap-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Painel do Estabelecimento</h1>
-              <p className="text-muted-foreground">
-                {establishment?.name || "Meu Estabelecimento"} - {establishment?.city || "São Paulo"}
-              </p>
-            </div>
-            <Badge variant="outline" className="bg-green-50">
-              Dono de Estabelecimento
+    <div className="min-h-screen bg-dark-bg text-white pb-20">
+      <div className="max-w-md mx-auto">
+        <Header />
+        
+        <main className="p-4">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold">Painel do Estabelecimento</h1>
+            <Badge variant="outline" className="border-roxo-magenta text-roxo-magenta">
+              <Building className="w-4 h-4 mr-1" />
+              Dono
             </Badge>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Visualizações</CardTitle>
-                <Eye className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalViews || 4266}</div>
-                <p className="text-xs text-muted-foreground">Total de visualizações</p>
+          {/* Stats Overview */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <Card className="bg-dark-card border-0">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-roxo-magenta rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{stats?.totalEvents || 0}</p>
+                    <p className="text-sm text-gray-400">Eventos</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Reações</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalReactions || 479}</div>
-                <p className="text-xs text-muted-foreground">Interações com eventos</p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Check-ins</CardTitle>
-                <QrCode className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.totalCheckIns || 301}</div>
-                <p className="text-xs text-muted-foreground">Presenças validadas</p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Conversão</CardTitle>
-                <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats?.conversionRate || 64.7}%</div>
-                <p className="text-xs text-muted-foreground">Reações para check-ins</p>
+
+            <Card className="bg-dark-card border-0">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{stats?.totalCheckIns || 0}</p>
+                    <p className="text-sm text-gray-400">Check-ins</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Main Dashboard Tabs */}
-          <Tabs defaultValue="events" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="events">Eventos</TabsTrigger>
-              <TabsTrigger value="staff">Equipe</TabsTrigger>
-              <TabsTrigger value="settings">Configurações</TabsTrigger>
-              <TabsTrigger value="stats">Estatísticas</TabsTrigger>
+          {/* Tabs for different sections */}
+          <Tabs defaultValue="events" className="space-y-4">
+            <TabsList className="grid w-full grid-cols-4 bg-dark-card">
+              <TabsTrigger value="events" className="text-sm">
+                <Calendar className="w-4 h-4 mr-1" />
+                Eventos
+              </TabsTrigger>
+              <TabsTrigger value="team" className="text-sm">
+                <Users className="w-4 h-4 mr-1" />
+                Equipe
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="text-sm">
+                <Settings className="w-4 h-4 mr-1" />
+                Config
+              </TabsTrigger>
+              <TabsTrigger value="stats" className="text-sm">
+                <BarChart3 className="w-4 h-4 mr-1" />
+                Stats
+              </TabsTrigger>
             </TabsList>
 
             {/* Events Tab */}
             <TabsContent value="events" className="space-y-4">
-              <Card>
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Plus className="h-5 w-5" />
+                  <CardTitle className="flex items-center">
+                    <Plus className="w-5 h-5 mr-2" />
                     Criar Novo Evento
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="eventTitle">Título do Evento *</Label>
-                      <Input
-                        id="eventTitle"
-                        value={eventData.title}
-                        onChange={(e) => setEventData({...eventData, title: e.target.value})}
-                        placeholder="Ex: Noite do Pagode"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="eventCategory">Categoria *</Label>
-                      <Select value={eventData.category} onValueChange={(value) => setEventData({...eventData, category: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="PAGODE">Pagode</SelectItem>
-                          <SelectItem value="SERTANEJO">Sertanejo</SelectItem>
-                          <SelectItem value="FUNK">Funk</SelectItem>
-                          <SelectItem value="TECHNO">Techno</SelectItem>
-                          <SelectItem value="FORRÓ">Forró</SelectItem>
-                          <SelectItem value="ROCK">Rock</SelectItem>
-                          <SelectItem value="SAMBA">Samba</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label htmlFor="title">Título do Evento</Label>
+                    <Input
+                      id="title"
+                      value={eventData.title}
+                      onChange={(e) => setEventData({...eventData, title: e.target.value})}
+                      placeholder="Ex: Noite do Pagode"
+                      className="bg-dark-bg border-gray-700"
+                    />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="startDate">Data/Hora de Início *</Label>
-                      <Input
-                        id="startDate"
-                        type="datetime-local"
-                        value={eventData.startDatetime}
-                        onChange={(e) => setEventData({...eventData, startDatetime: e.target.value})}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="endDate">Data/Hora de Término</Label>
-                      <Input
-                        id="endDate"
-                        type="datetime-local"
-                        value={eventData.endDatetime}
-                        onChange={(e) => setEventData({...eventData, endDatetime: e.target.value})}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="eventDescription">Descrição do Evento</Label>
+                  <div>
+                    <Label htmlFor="description">Descrição</Label>
                     <Textarea
-                      id="eventDescription"
+                      id="description"
                       value={eventData.description}
                       onChange={(e) => setEventData({...eventData, description: e.target.value})}
-                      placeholder="Descreva o evento..."
-                      className="min-h-[100px]"
+                      placeholder="Descrição do evento..."
+                      className="bg-dark-bg border-gray-700"
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="eventBenefits">Benefícios (separados por vírgula)</Label>
+                  
+                  <div>
+                    <Label htmlFor="category">Categoria</Label>
+                    <Select value={eventData.category} onValueChange={(value) => setEventData({...eventData, category: value})}>
+                      <SelectTrigger className="bg-dark-bg border-gray-700">
+                        <SelectValue placeholder="Selecione a categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PAGODE">Pagode</SelectItem>
+                        <SelectItem value="SERTANEJO">Sertanejo</SelectItem>
+                        <SelectItem value="FUNK">Funk</SelectItem>
+                        <SelectItem value="ROCK">Rock</SelectItem>
+                        <SelectItem value="TECHNO">Techno</SelectItem>
+                        <SelectItem value="FORRÓ">Forró</SelectItem>
+                        <SelectItem value="SAMBA">Samba</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="startDatetime">Data e Hora de Início</Label>
                     <Input
-                      id="eventBenefits"
+                      id="startDatetime"
+                      type="datetime-local"
+                      value={eventData.startDatetime}
+                      onChange={(e) => setEventData({...eventData, startDatetime: e.target.value})}
+                      className="bg-dark-bg border-gray-700"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="endDatetime">Data e Hora de Fim (opcional)</Label>
+                    <Input
+                      id="endDatetime"
+                      type="datetime-local"
+                      value={eventData.endDatetime}
+                      onChange={(e) => setEventData({...eventData, endDatetime: e.target.value})}
+                      className="bg-dark-bg border-gray-700"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="benefits">Benefícios/Incentivos</Label>
+                    <Textarea
+                      id="benefits"
                       value={eventData.benefits}
                       onChange={(e) => setEventData({...eventData, benefits: e.target.value})}
-                      placeholder="Ex: vale chopp, entrada grátis, brinde especial"
+                      placeholder="Ex: Desconto de 20% em bebidas, entrada gratuita até 23h..."
+                      className="bg-dark-bg border-gray-700"
                     />
                   </div>
-
+                  
                   <Button 
-                    onClick={handleCreateEvent} 
+                    onClick={handleCreateEvent}
                     disabled={createEventMutation.isPending}
-                    className="w-full"
+                    className="w-full bg-roxo-magenta hover:bg-roxo-magenta/90"
                   >
                     {createEventMutation.isPending ? "Criando..." : "Criar Evento"}
                   </Button>
@@ -372,124 +363,110 @@ export default function EstablishmentAdmin() {
               </Card>
 
               {/* Events List */}
-              <Card>
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5" />
-                    Meus Eventos
-                  </CardTitle>
+                  <CardTitle>Meus Eventos</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {events.length > 0 ? (
-                    <div className="space-y-4">
-                      {events.map((event: any) => (
-                        <div key={event.id} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold">{event.title}</h3>
-                              <p className="text-sm text-muted-foreground">{event.category}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(event.startDatetime).toLocaleString()}
-                              </p>
-                            </div>
-                            <Badge variant="outline">{event.category}</Badge>
-                          </div>
-                          {event.description && (
-                            <p className="text-sm mt-2">{event.description}</p>
-                          )}
-                        </div>
-                      ))}
+                  {events.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhum evento criado ainda</p>
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Nenhum evento criado ainda</p>
+                    <div className="space-y-3">
+                      {events.map((event: any) => (
+                        <div key={event.id} className="p-3 bg-dark-bg rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-semibold">{event.title}</h3>
+                              <p className="text-sm text-gray-400">{event.category}</p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(event.startDatetime).toLocaleString('pt-BR')}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="border-roxo-magenta text-roxo-magenta">
+                              {event.category}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Staff Tab */}
-            <TabsContent value="staff" className="space-y-4">
-              <Card>
+            {/* Team Tab */}
+            <TabsContent value="team" className="space-y-4">
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <UserPlus className="h-5 w-5" />
-                    Gerenciar Equipe
+                  <CardTitle className="flex items-center">
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    Promover Usuário
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-amber-50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">📋 Como Encontrar o ID do Usuário</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Usuário deve fazer login primeiro na plataforma</li>
-                      <li>• O ID aparece no topo do perfil (número como 45077607)</li>
-                      <li>• <strong>NÃO é o email</strong> - é o ID numérico do Replit</li>
-                    </ul>
+                  <div>
+                    <Label htmlFor="userId">ID do Usuário</Label>
+                    <Input
+                      id="userId"
+                      value={userId}
+                      onChange={(e) => setUserId(e.target.value)}
+                      placeholder="Digite o ID do usuário"
+                      className="bg-dark-bg border-gray-700"
+                    />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="userId">ID do Usuário</Label>
-                      <Input
-                        id="userId"
-                        value={userId}
-                        onChange={(e) => setUserId(e.target.value)}
-                        placeholder="Digite o ID numérico (ex: 45077607)"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Função</Label>
-                      <Select value={selectedRole} onValueChange={(value: "FUNCIONARIO" | "PROMOTER") => setSelectedRole(value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a função" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="FUNCIONARIO">Funcionário</SelectItem>
-                          <SelectItem value="PROMOTER">Promoter</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <Label htmlFor="role">Função</Label>
+                    <Select value={selectedRole} onValueChange={(value: "FUNCIONARIO" | "PROMOTER") => setSelectedRole(value)}>
+                      <SelectTrigger className="bg-dark-bg border-gray-700">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="FUNCIONARIO">Funcionário (Validação QR)</SelectItem>
+                        <SelectItem value="PROMOTER">Promoter (Links personalizados)</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <Button 
-                    onClick={handlePromoteEmployee} 
-                    disabled={isPromoving || !userId.trim()}
-                    className="w-full"
+                    onClick={handlePromoteUser}
+                    disabled={isPromoving}
+                    className="w-full bg-roxo-magenta hover:bg-roxo-magenta/90"
                   >
-                    {isPromoving ? "Promovendo..." : "Adicionar Membro"}
+                    {isPromoving ? "Promovendo..." : "Promover Usuário"}
                   </Button>
                 </CardContent>
               </Card>
 
               {/* Staff List */}
-              <Card>
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Equipe Atual
-                  </CardTitle>
+                  <CardTitle>Equipe</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {staff.length > 0 ? (
-                    <div className="space-y-4">
+                  {staff.length === 0 ? (
+                    <div className="text-center py-8 text-gray-400">
+                      <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhum funcionário ou promoter ainda</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
                       {staff.map((member: any) => (
-                        <div key={member.id} className="flex justify-between items-center p-4 border rounded-lg">
+                        <div key={member.id} className="flex items-center justify-between p-3 bg-dark-bg rounded-lg">
                           <div>
-                            <h3 className="font-semibold">{member.firstName} {member.lastName}</h3>
-                            <p className="text-sm text-muted-foreground">{member.role}</p>
+                            <h3 className="font-semibold">{member.firstName || member.email}</h3>
+                            <p className="text-sm text-gray-400">{member.email}</p>
                           </div>
-                          <Badge variant={member.role === 'FUNCIONARIO' ? 'default' : 'secondary'}>
+                          <Badge variant="outline" className={
+                            member.role === 'FUNCIONARIO' ? 'border-green-500 text-green-500' : 'border-blue-500 text-blue-500'
+                          }>
                             {member.role === 'FUNCIONARIO' ? 'Funcionário' : 'Promoter'}
                           </Badge>
                         </div>
                       ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Nenhum membro da equipe ainda</p>
                     </div>
                   )}
                 </CardContent>
@@ -498,79 +475,85 @@ export default function EstablishmentAdmin() {
 
             {/* Settings Tab */}
             <TabsContent value="settings" className="space-y-4">
-              <Card>
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
+                  <CardTitle className="flex items-center">
+                    <Settings className="w-5 h-5 mr-2" />
                     Configurações do Estabelecimento
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="estName">Nome do Estabelecimento</Label>
+                  <div>
+                    <Label htmlFor="name">Nome do Estabelecimento</Label>
+                    <Input
+                      id="name"
+                      value={establishmentSettings.name}
+                      onChange={(e) => setEstablishmentSettings({...establishmentSettings, name: e.target.value})}
+                      placeholder="Nome do seu estabelecimento"
+                      className="bg-dark-bg border-gray-700"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="description">Descrição</Label>
+                    <Textarea
+                      id="description"
+                      value={establishmentSettings.description}
+                      onChange={(e) => setEstablishmentSettings({...establishmentSettings, description: e.target.value})}
+                      placeholder="Descrição do estabelecimento..."
+                      className="bg-dark-bg border-gray-700"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="city">Cidade</Label>
                       <Input
-                        id="estName"
-                        value={establishmentSettings.name}
-                        onChange={(e) => setEstablishmentSettings({...establishmentSettings, name: e.target.value})}
-                        placeholder="Ex: Bar do Zé"
+                        id="city"
+                        value={establishmentSettings.city}
+                        onChange={(e) => setEstablishmentSettings({...establishmentSettings, city: e.target.value})}
+                        placeholder="Cidade"
+                        className="bg-dark-bg border-gray-700"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="estCategory">Categoria Principal</Label>
-                      <Select value={establishmentSettings.category} onValueChange={(value) => setEstablishmentSettings({...establishmentSettings, category: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione a categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="PAGODE">Pagode</SelectItem>
-                          <SelectItem value="SERTANEJO">Sertanejo</SelectItem>
-                          <SelectItem value="FUNK">Funk</SelectItem>
-                          <SelectItem value="TECHNO">Techno</SelectItem>
-                          <SelectItem value="FORRÓ">Forró</SelectItem>
-                          <SelectItem value="ROCK">Rock</SelectItem>
-                          <SelectItem value="SAMBA">Samba</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div>
+                      <Label htmlFor="state">Estado</Label>
+                      <Input
+                        id="state"
+                        value={establishmentSettings.state}
+                        onChange={(e) => setEstablishmentSettings({...establishmentSettings, state: e.target.value})}
+                        placeholder="Estado"
+                        className="bg-dark-bg border-gray-700"
+                      />
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="estCity">Cidade</Label>
-                      <Input
-                        id="estCity"
-                        value={establishmentSettings.city}
-                        onChange={(e) => setEstablishmentSettings({...establishmentSettings, city: e.target.value})}
-                        placeholder="Ex: São Paulo"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="estState">Estado</Label>
-                      <Input
-                        id="estState"
-                        value={establishmentSettings.state}
-                        onChange={(e) => setEstablishmentSettings({...establishmentSettings, state: e.target.value})}
-                        placeholder="Ex: SP"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="estDescription">Descrição</Label>
-                    <Textarea
-                      id="estDescription"
-                      value={establishmentSettings.description}
-                      onChange={(e) => setEstablishmentSettings({...establishmentSettings, description: e.target.value})}
-                      placeholder="Descreva seu estabelecimento..."
-                      className="min-h-[100px]"
+                  <div>
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input
+                      id="phone"
+                      value={establishmentSettings.phone}
+                      onChange={(e) => setEstablishmentSettings({...establishmentSettings, phone: e.target.value})}
+                      placeholder="(11) 99999-9999"
+                      className="bg-dark-bg border-gray-700"
                     />
                   </div>
-
+                  
+                  <div>
+                    <Label htmlFor="openingHours">Horário de Funcionamento</Label>
+                    <Input
+                      id="openingHours"
+                      value={establishmentSettings.openingHours}
+                      onChange={(e) => setEstablishmentSettings({...establishmentSettings, openingHours: e.target.value})}
+                      placeholder="Ex: Seg-Dom 18h-04h"
+                      className="bg-dark-bg border-gray-700"
+                    />
+                  </div>
+                  
                   <Button 
-                    onClick={handleUpdateSettings} 
+                    onClick={handleUpdateSettings}
                     disabled={updateEstablishmentMutation.isPending}
-                    className="w-full"
+                    className="w-full bg-roxo-magenta hover:bg-roxo-magenta/90"
                   >
                     {updateEstablishmentMutation.isPending ? "Salvando..." : "Salvar Configurações"}
                   </Button>
@@ -578,62 +561,62 @@ export default function EstablishmentAdmin() {
               </Card>
             </TabsContent>
 
-            {/* Statistics Tab */}
+            {/* Stats Tab */}
             <TabsContent value="stats" className="space-y-4">
-              <Card>
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-dark-card border-0">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-roxo-magenta">{stats?.totalEvents || 0}</div>
+                    <div className="text-sm text-gray-400">Total de Eventos</div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-dark-card border-0">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-green-500">{stats?.totalCheckIns || 0}</div>
+                    <div className="text-sm text-gray-400">Check-ins</div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-dark-card border-0">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-500">{stats?.totalStaff || 0}</div>
+                    <div className="text-sm text-gray-400">Funcionários</div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-dark-card border-0">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-yellow-500">{stats?.totalPromoters || 0}</div>
+                    <div className="text-sm text-gray-400">Promoters</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5" />
-                    Estatísticas do Estabelecimento
-                  </CardTitle>
+                  <CardTitle>Estatísticas Detalhadas</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Métricas Gerais</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Total de Eventos Criados</span>
-                          <span className="font-medium">{stats?.totalEvents || events.length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total de Check-ins</span>
-                          <span className="font-medium">{stats?.totalCheckIns || 301}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total de Reações</span>
-                          <span className="font-medium">{stats?.totalReactions || 479}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Taxa de Conversão</span>
-                          <span className="font-medium">{stats?.conversionRate || 64.7}%</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Equipe</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span>Total de Funcionários</span>
-                          <span className="font-medium">{staff.filter((s: any) => s.role === 'FUNCIONARIO').length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total de Promoters</span>
-                          <span className="font-medium">{staff.filter((s: any) => s.role === 'PROMOTER').length}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Total da Equipe</span>
-                          <span className="font-medium">{staff.length}</span>
-                        </div>
-                      </div>
-                    </div>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Visualizações:</span>
+                    <span className="font-semibold">{Math.round(stats?.totalViews || 0)}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Reações:</span>
+                    <span className="font-semibold">{stats?.totalReactions || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400">Taxa de Conversão:</span>
+                    <span className="font-semibold">{stats?.conversionRate || 0}%</span>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
+        </main>
+        
+        <BottomNav />
       </div>
     </div>
   );
