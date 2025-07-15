@@ -15,6 +15,7 @@ import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 import EstablishmentAdminNew from "@/pages/establishment-admin-new";
+import InstallPrompt from "@/components/install-prompt";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -58,6 +59,7 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <Router />
+          <InstallPrompt />
           <Toaster />
         </TooltipProvider>
       </AuthProvider>
