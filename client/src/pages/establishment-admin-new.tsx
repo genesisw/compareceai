@@ -273,14 +273,14 @@ export default function EstablishmentAdminNew() {
             <TabsContent value="events" className="space-y-4">
               <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-white">
                     <Plus className="w-5 h-5 mr-2" />
                     Criar Novo Evento
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="title">Título do Evento</Label>
+                    <Label htmlFor="title" className="text-white">Título do Evento</Label>
                     <Input
                       id="title"
                       value={eventData.title}
@@ -291,7 +291,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="description">Descrição</Label>
+                    <Label htmlFor="description" className="text-white">Descrição</Label>
                     <Textarea
                       id="description"
                       value={eventData.description}
@@ -302,7 +302,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="category">Categoria</Label>
+                    <Label htmlFor="category" className="text-white">Categoria</Label>
                     <Select value={eventData.category} onValueChange={(value) => setEventData({...eventData, category: value})}>
                       <SelectTrigger className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta">
                         <SelectValue placeholder="Selecione a categoria" />
@@ -320,7 +320,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="startDatetime">Data e Hora de Início</Label>
+                    <Label htmlFor="startDatetime" className="text-white">Data e Hora de Início</Label>
                     <Input
                       id="startDatetime"
                       type="datetime-local"
@@ -331,7 +331,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="endDatetime">Data e Hora de Fim (opcional)</Label>
+                    <Label htmlFor="endDatetime" className="text-white">Data e Hora de Fim (opcional)</Label>
                     <Input
                       id="endDatetime"
                       type="datetime-local"
@@ -342,7 +342,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="benefits">Benefícios/Incentivos</Label>
+                    <Label htmlFor="benefits" className="text-white">Benefícios/Incentivos</Label>
                     <Textarea
                       id="benefits"
                       value={eventData.benefits}
@@ -365,7 +365,7 @@ export default function EstablishmentAdminNew() {
               {/* Events List */}
               <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle>Meus Eventos</CardTitle>
+                  <CardTitle className="text-white">Meus Eventos</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {events.length === 0 ? (
@@ -401,14 +401,14 @@ export default function EstablishmentAdminNew() {
             <TabsContent value="team" className="space-y-4">
               <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-white">
                     <UserPlus className="w-5 h-5 mr-2" />
                     Promover Usuário
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="userId">ID do Usuário</Label>
+                    <Label htmlFor="userId" className="text-white">ID do Usuário</Label>
                     <Input
                       id="userId"
                       value={userId}
@@ -419,7 +419,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="role">Função</Label>
+                    <Label htmlFor="role" className="text-white">Função</Label>
                     <Select value={selectedRole} onValueChange={(value: "FUNCIONARIO" | "PROMOTER") => setSelectedRole(value)}>
                       <SelectTrigger className="bg-gray-800 border-gray-600 text-white focus:border-roxo-magenta focus:ring-roxo-magenta">
                         <SelectValue />
@@ -444,7 +444,7 @@ export default function EstablishmentAdminNew() {
               {/* Staff List */}
               <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle>Equipe</CardTitle>
+                  <CardTitle className="text-white">Equipe</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {staff.length === 0 ? (
@@ -477,14 +477,14 @@ export default function EstablishmentAdminNew() {
             <TabsContent value="settings" className="space-y-4">
               <Card className="bg-dark-card border-0">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
+                  <CardTitle className="flex items-center text-white">
                     <Settings className="w-5 h-5 mr-2" />
                     Configurações do Estabelecimento
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="name">Nome do Estabelecimento</Label>
+                    <Label htmlFor="name" className="text-white">Nome do Estabelecimento</Label>
                     <Input
                       id="name"
                       value={establishmentSettings.name}
@@ -495,7 +495,7 @@ export default function EstablishmentAdminNew() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="description">Descrição</Label>
+                    <Label htmlFor="description" className="text-white">Descrição</Label>
                     <Textarea
                       id="description"
                       value={establishmentSettings.description}
@@ -507,46 +507,46 @@ export default function EstablishmentAdminNew() {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="city">Cidade</Label>
+                      <Label htmlFor="city" className="text-white">Cidade</Label>
                       <Input
                         id="city"
                         value={establishmentSettings.city}
                         onChange={(e) => setEstablishmentSettings({...establishmentSettings, city: e.target.value})}
                         placeholder="Cidade"
-                        className="bg-dark-bg border-gray-700"
+                        className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="state">Estado</Label>
+                      <Label htmlFor="state" className="text-white">Estado</Label>
                       <Input
                         id="state"
                         value={establishmentSettings.state}
                         onChange={(e) => setEstablishmentSettings({...establishmentSettings, state: e.target.value})}
                         placeholder="Estado"
-                        className="bg-dark-bg border-gray-700"
+                        className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <Label htmlFor="phone">Telefone</Label>
+                    <Label htmlFor="phone" className="text-white">Telefone</Label>
                     <Input
                       id="phone"
                       value={establishmentSettings.phone}
                       onChange={(e) => setEstablishmentSettings({...establishmentSettings, phone: e.target.value})}
                       placeholder="(11) 99999-9999"
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   
                   <div>
-                    <Label htmlFor="openingHours">Horário de Funcionamento</Label>
+                    <Label htmlFor="openingHours" className="text-white">Horário de Funcionamento</Label>
                     <Input
                       id="openingHours"
                       value={establishmentSettings.openingHours}
                       onChange={(e) => setEstablishmentSettings({...establishmentSettings, openingHours: e.target.value})}
                       placeholder="Ex: Seg-Dom 18h-04h"
-                      className="bg-dark-bg border-gray-700"
+                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-roxo-magenta focus:ring-roxo-magenta"
                     />
                   </div>
                   

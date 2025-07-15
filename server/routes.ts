@@ -331,8 +331,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const establishments = await storage.getEstablishmentsByOwner(userId);
-      res.json(establishments[0] || null);
+      let establishments = await storage.getEstablishmentsByOwner(userId);
+      
+      // If no establishment exists, create one automatically
+      if (establishments.length === 0) {
+        const defaultEstablishment = await storage.createEstablishment({
+          id: randomUUID(),
+          name: `Estabelecimento de ${user.firstName || user.email?.split('@')[0] || 'Usuario'}`,
+          description: "Estabelecimento criado automaticamente - configure as informações",
+          city: "São Paulo",
+          state: "SP",
+          ownerId: userId,
+          phone: "",
+          openingHours: "Segunda a Domingo 18h-04h",
+          category: "bar"
+        });
+        establishments = [defaultEstablishment];
+      }
+      
+      res.json(establishments[0]);
     } catch (error) {
       console.error("Error fetching establishment:", error);
       res.status(500).json({ message: "Failed to fetch establishment" });
@@ -370,9 +387,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const establishments = await storage.getEstablishmentsByOwner(userId);
-      if (!establishments.length) {
-        return res.status(400).json({ message: "No establishment found" });
+      let establishments = await storage.getEstablishmentsByOwner(userId);
+      
+      // If no establishment exists, create one automatically
+      if (establishments.length === 0) {
+        const defaultEstablishment = await storage.createEstablishment({
+          id: randomUUID(),
+          name: `Estabelecimento de ${user.firstName || user.email?.split('@')[0] || 'Usuario'}`,
+          description: "Estabelecimento criado automaticamente - configure as informações",
+          city: "São Paulo",
+          state: "SP",
+          ownerId: userId,
+          phone: "",
+          openingHours: "Segunda a Domingo 18h-04h",
+          category: "bar"
+        });
+        establishments = [defaultEstablishment];
       }
 
       const eventData = {
@@ -452,9 +482,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const establishments = await storage.getEstablishmentsByOwner(userId);
-      if (!establishments.length) {
-        return res.status(400).json({ message: "No establishment found" });
+      let establishments = await storage.getEstablishmentsByOwner(userId);
+      
+      // If no establishment exists, create one automatically
+      if (establishments.length === 0) {
+        const defaultEstablishment = await storage.createEstablishment({
+          id: randomUUID(),
+          name: `Estabelecimento de ${user.firstName || user.email?.split('@')[0] || 'Usuario'}`,
+          description: "Estabelecimento criado automaticamente - configure as informações",
+          city: "São Paulo",
+          state: "SP",
+          ownerId: userId,
+          phone: "",
+          openingHours: "Segunda a Domingo 18h-04h",
+          category: "bar"
+        });
+        establishments = [defaultEstablishment];
       }
 
       const updatedEstablishment = await storage.updateEstablishment(establishments[0].id, req.body);
